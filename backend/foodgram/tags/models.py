@@ -7,18 +7,14 @@ class Tag(models.Model):
 
     name = models.CharField(
         _('Название'),
-        max_length=50,
+        max_length=32,
         unique=True,
         help_text=_('Название тега')
     )
-    color = models.CharField(
-        _('Цвет'),
-        default='#FF0000',
-        help_text=_('Цвет в HEX формате (#RRGGBB)')
-    )
     slug = models.SlugField(
         _('Слаг'),
-        max_length=50,
+        max_length=32,
+        null=True,
         unique=True,
         help_text=_('Уникальный слаг для URL')
     )

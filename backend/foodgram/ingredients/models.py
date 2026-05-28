@@ -7,13 +7,13 @@ class Ingredient(models.Model):
 
     name = models.CharField(
         _('Название'),
-        max_length=200,
+        max_length=128,
         unique=True,
         help_text=_('Название ингредиента')
     )
     measurement_unit = models.CharField(
         _('Единица измерения'),
-        max_length=50,
+        max_length=64,
         help_text=_('Единица измерения (г, мл, шт. и т.д.)')
     )
 

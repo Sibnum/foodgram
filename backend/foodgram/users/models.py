@@ -17,7 +17,7 @@ class User(AbstractUser):
         help_text=_('Обязательное поле. Максимум 150 символов.')
     )
     last_name = models.CharField(
-        _('Имя'),
+        _('Фамилия'),
         max_length=150,
         blank=False,
         help_text=_('Обязательное поле. Максимум 150 символов.')
