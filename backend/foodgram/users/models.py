@@ -35,7 +35,7 @@ class User(AbstractUser):
         verbose_name=_('Аватар'),
         help_text=_('Загрузите изображение для аватара')
     )
-    bio = models. TextField(
+    bio = models.TextField(
         max_length=500,
         blank=True,
         verbose_name=_('Биография'),
@@ -86,3 +86,38 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+
+class Subscription(models.Model):
+    """Модель подписки пользователя на автора."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+        verbose_name=_('Подписчик')
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscribers',
+        verbose_name=_('Автор'),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Дата подписки')
+    )
+
+    class Meta:
+        verbose_name = _('Подписка')
+        verbose_name_plural = _('Подписки')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_subscription'
+            )
+        ]
+        ordering = ['-created_at']
+ 
+    def __str__(self):
+        return f'{self.user.username} подписан на {self.author.username}'
