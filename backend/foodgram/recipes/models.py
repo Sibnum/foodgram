@@ -56,6 +56,9 @@ class Recipe(models.Model):
         null=True,
         help_text=_('Короткая ссылка на рецепт')
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     class Meta:
         verbose_name = _('Рецепт')
