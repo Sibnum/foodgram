@@ -28,3 +28,8 @@ class UserAdmin(BaseUserAdmin):
     def recipes_count(self, user):
         """Возвращает количество рецептов пользователя."""
         return user.recipes.count()
+
+    @admin.display(description='Количество избранных рецептов')
+    def favorite_recipes_count(self, user):
+        """Возвращает количество избранных рецептов."""
+        return user.favorite_recipes_count

@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Recipe, IngredientInRecipes, Favorite, ShoppingCart
 
 
-class IngredientInRecipesInline(admin.Tabularinline):
+class IngredientInRecipesInline(admin.TabularInline):
     """Редактирование ингредиентов на странице рецептов."""
 
     model = IngredientInRecipes
@@ -19,7 +19,7 @@ class RecipeAdmin(admin.ModelAdmin):
     - Просмотр и редактирование рецептов
     - Редактирование ингредиентов с количеством на странице рецептов
     - Фильтрация по тегам и авторам
-    - Отображение статистики (избранноеб список покупок)
+    - Отображение статистики (избранное список покупок)
     """
 
     list_display = (
@@ -31,7 +31,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'in_shopping_carts_count',
     )
     list_filter = ('tags', 'author')
-    seatch_fields = ('name', 'author__username')
+    search_fields = ('name', 'author__username')
     inlines = (IngredientInRecipesInline,)
     readonly_fields = ('short_link',)
 
@@ -43,11 +43,12 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='В избранном')
     def in_favorites_count(self, recipe):
         """Возвращает количество избранного."""
-        return recipe.faborites.count()
+        return recipe.favorites.count()
 
     @admin.display(description='В списке покупок')
     def in_shopping_carts_count(self, recipe):
         """Возвращает количество в списке покупок."""
+        return recipe.shopping_cart.count()
 
 
 @admin.register(Favorite)
