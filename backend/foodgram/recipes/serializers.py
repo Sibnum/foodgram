@@ -3,7 +3,9 @@ import uuid
 
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-from .models import Ingredient, IngredientInRecipes, Recipe, Tag
+from .models import (
+    Favorite, Ingredient, IngredientInRecipes, Recipe, ShoppingCart, Tag
+)
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
 
@@ -37,7 +39,7 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор для чтения рецептов и рецептов пользователя.
 
-    Используется для запросов GET /api/recipes/ и GET /api/recipes/{id}/
+    Используется для запросов GET /api/recipes/ и GET /api/recipes/{id}/.
     """
 
     tags = TagSerializer(many=True, read_only=True)
@@ -200,3 +202,51 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if tags_data is not None:
             instance.tags.set(tags_data)
         return super().update(instance, validated_data)
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для рецептов из избранного.
+
+    Для POST/DELETE /api/recipes/{id}/favorite/.
+    """
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'recipe')
+
+    def validate(self, data):
+        """Проверяет рецепт в избранном."""
+        if Favorite.objects.filter(
+            user=data['user'],
+            recipe=data['recipe'],
+        ).exists()
+            raise serializers.ValidationError('Рецепт уже в избранном.')
+        return data
+    
+    def to_representation(self, instance):
+        """Возвращает мини-рецепт."""
+        return RecipeMinifiedSerializer(instance.recipe).data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализатор для списка покупок.
+    
+    Для POST/DELETE /api/recipes/{id}/shopping_cart/
+    """
+
+    class Meta:
+        model = ShoppingCart
+
+    def validate(self, data):
+        """Проверяет наличие рецепта в списке покупок."""
+        if ShoppingCart.objects.filter(
+            user=data['user'],
+            recipe=data['recipe']
+        ).exists():
+            raise serializers.ValidationError('Рецепт уже в списке покупок.')
+        return data
+    
+    def to_representation(self, instance):
+        """Возвращает список покупок."""
+        return RecipeMinifiedSerializer(instance.recipe).data
+    
