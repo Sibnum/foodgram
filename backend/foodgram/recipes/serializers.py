@@ -4,7 +4,8 @@ import uuid
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 from .models import Ingredient, IngredientInRecipes, Recipe, Tag
-from .serializers import TagSerializer, CustomUserSerializer
+from tags.serializers import TagSerializer
+from users.serializers import CustomUserSerializer
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
@@ -190,11 +191,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             bulk_ingredients = [
                 IngredientInRecipes(
                     recipe=instance,
-                    ingredient_id=item['id']
+                    ingredient_id=item['id'],
                     amount=item['amount']
                 )
                 for item in ingredients_data
             ]
-        if tag_data is not None:
+            IngredientInRecipes.objects.bulk_create(bulk_ingredients)
+        if tags_data is not None:
             instance.tags.set(tags_data)
         return super().update(instance, validated_data)
