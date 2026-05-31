@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from recipes.serializers import RecipeMinifiedSerializer
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -58,3 +59,47 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для пользователя и его рецептов.
+
+    Для GET /api/users/subscriptions/
+    """
+
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(
+        source='recipes.count',
+        read_only=True,
+    )
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+            'avatar'
+        )
+
+    def get_is_subscribed(self, user):
+        """Возвращает подписку, раз находится в этом списке."""
+        return True
+
+    def get_recipes(self, user):
+        """Проверяет лимит для рецепта."""
+        request = self.context.get('request')
+        limit = request.query_params.get('recipes_limit')
+        recipes = user.recipes.all()
+        if limit:
+            try:
+                recipes = recipes[:int(limit)]
+            except (ValueError, TypeError):
+                pass
+        return RecipeMinifiedSerializer(recipes, many=True).data
