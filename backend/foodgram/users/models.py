@@ -118,6 +118,6 @@ class Subscription(models.Model):
             )
         ]
         ordering = ['-created_at']
- 
+
     def __str__(self):
         return f'{self.user.username} подписан на {self.author.username}'

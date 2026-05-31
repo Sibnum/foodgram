@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from recipes.serializers import RecipeMinifiedSerializer
+from foodgram.fields import Base64ImageField
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -103,3 +104,27 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             except (ValueError, TypeError):
                 pass
         return RecipeMinifiedSerializer(recipes, many=True).data
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    """Сериализатор для проверки текущего пароля."""
+
+    new_password = serializers.CharField()
+    current_password = serializers.CharField()
+
+    def validate_current_password(self, value):
+        """Проверяет текущий пароль."""
+        request = self.context.get('request')
+        if not request.user.check_password(value):
+            raise serializers.ValidationError('Неверный текущий пароль.')
+        return value
+
+
+class SetAvatarSerializer(serializers.ModelSerializer):
+    """Сериализатор для аватара пользователя."""
+
+    avatar = Base64ImageField()
+
+    class Meta:
+        model = User
+        fields = ('avatar',)

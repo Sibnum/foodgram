@@ -1,13 +1,10 @@
-import base64
-import uuid
-
-from django.core.files.base import ContentFile
 from rest_framework import serializers
 from .models import (
     Favorite, Ingredient, IngredientInRecipes, Recipe, ShoppingCart, Tag
 )
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
+from foodgram.fields import Base64ImageField
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
@@ -67,7 +64,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_is_favorite(self, obj):
+    def get_is_favorited(self, obj):
         """Возвращает список избранного, если пользователь аутентифицирован."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
@@ -80,19 +77,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.shopping_cart.filter(user=request.user).exists()
         return False
-
-
-class Base64ImageField(serializers.ImageField):
-    """Декодирует base64-строку в файл изображения."""
-
-    def to_internal_value(self, data):
-        """Декодирует base64-строку и возвращает файловый объект."""
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            name = f'{uuid.uuid4()}.{ext}'
-            data = ContentFile(base64.b64decode(imgstr), name=name)
-        return super().to_internal_value(data)
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -236,6 +220,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingCart
+        fields = ('user', 'recipe')
 
     def validate(self, data):
         """Проверяет наличие рецепта в списке покупок."""
