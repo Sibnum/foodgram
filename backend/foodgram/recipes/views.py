@@ -40,4 +40,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.IsAuthenticated,):
         else:
             self.permission_classes = (permissions.AllowAny,)
-        return super().get_permissons() 
+        return super().get_permissons()
+    
+    def perform_create(self, serializer):
+        """Дополняет данные автором."""
+        serializer.save(author=self.request.user)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def favorite(self, request, pk=None):
+        """Обрабатывает добавление рецепта в избранные и удаление из него."""
+        recipe = self.get_object()
+        if request.method == 'POST':
+            serializer = FavoriteSerializer(
+                data={'user': request.user.id, 'recipe': recipe.id},
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=request.user, recipe=recipe)
+            return Responce(serializer.data, status=status.HTTP_201_CREATED)
+        
+        favorite = get_object_or_404(Favorite, user=request.user, recipe=recipe)
+        favorite.delete()
+        return Responce(status=status.HTTP_204_NO_CONTENT)
