@@ -35,13 +35,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         """Определяет набор разрешений для текущего запроса."""
         if self.action in ('create',):
-            self.permission_classes = (permissions.IsAuthenticated,):
+            self.permission_classes = (permissions.IsAuthenticated,)
         elif self.action in ('partial_update', 'update', 'destroy'):
-            self.permission_classes = (permissions.IsAuthenticated,):
+            self.permission_classes = (permissions.IsAuthenticated,)
         else:
             self.permission_classes = (permissions.AllowAny,)
         return super().get_permissons()
-    
+
     def perform_create(self, serializer):
         """Дополняет данные автором."""
         serializer.save(author=self.request.user)
@@ -52,7 +52,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated]
     )
     def favorite(self, request, pk=None):
-        """Обрабатывает добавление рецепта в избранные и удаление из него."""
+        """Обрабатывает добавление рецепта в избранные или удаление из него."""
         recipe = self.get_object()
         if request.method == 'POST':
             serializer = FavoriteSerializer(
@@ -62,7 +62,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user, recipe=recipe)
             return Responce(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         favorite = get_object_or_404(Favorite, user=request.user, recipe=recipe)
         favorite.delete()
         return Responce(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def shopping_cart(self, request, pk=None):
+        """Обрабатывает добавление или удаление продуктов из списка покупок."""
+        recipe = self.get_object()
+        if request.method == 'POST':
+            serializer = ShoppingCartSerializer(
+                data={'user': request.user.id, 'recipe': recipe.id},
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=request.user, recipe=recipe)
+            return Responce(serializer.data, status=status.HTTP_201_CREATED)
+
+        cart_item = get_object_or_404(
+            ShoppingCart,
+            user=request.user,
+            recipe=recipe
+        )
+        cart_item.delete()
+        return Responce(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['GET'])
+    def get_link(self, request, pk=None):
+        recipe = self.get_object()
+        if not recipe.short_link:
+            import secrets
+            recipe.short_link = secrets.token_urlsafe(6)[:8]
+            recipe.save(update_fields=['short_link'])
+        return Responce({'short-link': recipe.short_link})
