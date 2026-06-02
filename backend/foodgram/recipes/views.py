@@ -63,7 +63,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save(user=request.user, recipe=recipe)
             return Responce(serializer.data, status=status.HTTP_201_CREATED)
 
-        favorite = get_object_or_404(Favorite, user=request.user, recipe=recipe)
+        favorite = get_object_or_404(
+            Favorite,
+            user=request.user,
+            recipe=recipe
+        )
         favorite.delete()
         return Responce(status=status.HTTP_204_NO_CONTENT)
 
@@ -94,6 +98,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def get_link(self, request, pk=None):
+        """Генерирует короткую ссылку, если её ещё нет."""
         recipe = self.get_object()
         if not recipe.short_link:
             import secrets
