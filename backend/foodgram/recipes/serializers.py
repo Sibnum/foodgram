@@ -203,10 +203,10 @@ class FavoriteSerializer(serializers.ModelSerializer):
         if Favorite.objects.filter(
             user=data['user'],
             recipe=data['recipe'],
-        ).exists()
+        ).exists():
             raise serializers.ValidationError('Рецепт уже в избранном.')
         return data
-    
+
     def to_representation(self, instance):
         """Возвращает мини-рецепт."""
         return RecipeMinifiedSerializer(instance.recipe).data
@@ -214,7 +214,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для списка покупок.
-    
+
     Для POST/DELETE /api/recipes/{id}/shopping_cart/
     """
 
@@ -230,8 +230,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         ).exists():
             raise serializers.ValidationError('Рецепт уже в списке покупок.')
         return data
-    
+
     def to_representation(self, instance):
         """Возвращает список покупок."""
         return RecipeMinifiedSerializer(instance.recipe).data
-    

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
+    'corsheaders',
     'recipes.apps.RecipesConfig',
     'ingredients.apps.IngredientsConfig',
     'tags.apps.TagsConfig',

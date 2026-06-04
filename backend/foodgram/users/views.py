@@ -49,15 +49,15 @@ class UserViewSet(viewsets.ModelViewSet):
             'set_password',
             'avatar'
         ):
-            self.permissons_classes = (permissions.IsAuthenticated,)
+            self.permission_classes = (permissions.IsAuthenticated,)
         else:
-            self.permissions_classes = (permissions.AllowAny,)
+            self.permission_classes = (permissions.AllowAny,)
         return super().get_permissions()
 
     @action(detail=False, methods=['GET'])
     def subscriptions(self, request):
         """Возвращает пагинированный ответ со списком подписок пользователя."""
-        authors = User.objects.filter(subscribers_user=request.user)
+        authors = User.objects.filter(subscribers__user=request.user)
         page = self.paginate_queryset(authors)
         serializer = SubscriptionSerializer(
             page,
@@ -97,12 +97,12 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED
             )
 
-        subcription = get_object_or_404(
+        subscription = get_object_or_404(
             Subscription,
             user=request.user,
             author=author,
         )
-        subcription.delete()
+        subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['POST'])
@@ -117,7 +117,7 @@ class UserViewSet(viewsets.ModelViewSet):
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, method=['PUT', 'DELETE'])
+    @action(detail=False, methods=['PUT', 'DELETE'])
     def avatar(self, request):
         """Обрабатывает обвноление и удаления аватара пользователя."""
         if request.method == 'PUT':
@@ -125,7 +125,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 request.user,
                 data=request.data,
             )
-            serializer.us_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 

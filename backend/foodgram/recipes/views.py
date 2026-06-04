@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
-from rest_framework.response import Responce
+from rest_framework.response import Response
 
 from .models import Recipe, Favorite, ShoppingCart
 from .serializers import (
@@ -37,10 +37,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ('create',):
             self.permission_classes = (permissions.IsAuthenticated,)
         elif self.action in ('partial_update', 'update', 'destroy'):
-            self.permission_classes = (permissions.IsAuthenticated,)
+            self.permission_classes = (
+                permissions.IsAuthenticated,
+                IsAuthorOrReadOnly
+            )
         else:
             self.permission_classes = (permissions.AllowAny,)
-        return super().get_permissons()
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         """Дополняет данные автором."""
@@ -61,7 +64,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user, recipe=recipe)
-            return Responce(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         favorite = get_object_or_404(
             Favorite,
@@ -69,7 +72,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe=recipe
         )
         favorite.delete()
-        return Responce(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -86,7 +89,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user, recipe=recipe)
-            return Responce(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         cart_item = get_object_or_404(
             ShoppingCart,
@@ -94,7 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe=recipe
         )
         cart_item.delete()
-        return Responce(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['GET'])
     def get_link(self, request, pk=None):
@@ -104,4 +107,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
             import secrets
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
-        return Responce({'short-link': recipe.short_link})
+        return Response({'short-link': recipe.short_link})

@@ -129,7 +129,7 @@ class Favorite(models.Model):
 
     class Meta:
         verbose_name = _('Избранное')
-        verbose_name_plural = _('Избранное'),
+        verbose_name_plural = _('Избранное')
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

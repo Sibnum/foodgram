@@ -3,7 +3,7 @@ from .models import Tag
 from .serializers import TagSerializer
 
 
-class TagViewSet(viewsets.ReadOnluModelViewSet):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Отображает запросы GET /api/tags/ и GET /api/tags/{id}/."""
 
     queryset = Tag.objects.all()
