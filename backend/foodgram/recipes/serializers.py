@@ -5,7 +5,7 @@ from .models import (
 from .minified_serializer import RecipeMinifiedSerializer
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
-from foodgram.fields import Base64ImageField
+from fields import Base64ImageField
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
