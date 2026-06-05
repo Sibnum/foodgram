@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import (
     Favorite, Ingredient, IngredientInRecipes, Recipe, ShoppingCart, Tag
 )
+from .minified_serializer import RecipeMinifiedSerializer
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
 from foodgram.fields import Base64ImageField
@@ -23,14 +24,6 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientInRecipes
         fields = ('id', 'name', 'measurement_unit', 'amount')
-
-
-class RecipeMinifiedSerializer(serializers.ModelSerializer):
-    """Сериализатор для вывода укороченной версии рецепта."""
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class RecipeListSerializer(serializers.ModelSerializer):

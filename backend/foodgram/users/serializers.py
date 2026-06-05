@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import User
-from recipes.serializers import RecipeMinifiedSerializer
+from recipes.minified_serializer import RecipeMinifiedSerializer
 from foodgram.fields import Base64ImageField
 
 
