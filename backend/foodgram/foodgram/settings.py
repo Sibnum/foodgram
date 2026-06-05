@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'corsheaders',
+    'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'ingredients.apps.IngredientsConfig',
     'tags.apps.TagsConfig',
-    'users.apps.UsersConfig',
 ]
 
 AUTH_USER_MODEL = 'users.User'
