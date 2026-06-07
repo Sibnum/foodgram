@@ -126,7 +126,7 @@ class UserViewSet(viewsets.ModelViewSet):
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['PUT', 'DELETE'])
+    @action(detail=False, methods=['PUT', 'DELETE'], url_path='me/avatar')
     def avatar(self, request):
         """Обрабатывает обвноление и удаления аватара пользователя."""
         if request.method == 'PUT':
