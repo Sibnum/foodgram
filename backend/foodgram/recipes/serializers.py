@@ -139,6 +139,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Создаёт рецепт."""
+        validated_data.pop('author', None)
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
         image_data = validated_data.pop('image')
