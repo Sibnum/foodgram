@@ -105,6 +105,15 @@ class UserViewSet(viewsets.ModelViewSet):
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=False, methods=['GET'])
+    def me(self, request):
+        """Возвращает профиль текущего пользователя."""
+        serializer = CustomUserSerializer(
+            request.user,
+            context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['POST'])
     def set_password(self, request):
         """Выполняет валидацию нового пароля."""
