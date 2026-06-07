@@ -19,4 +19,4 @@ class TagAdmin(admin.ModelAdmin):
     @admin.display(description='Количество рецептов')
     def recipe_count(self, tag):
         """Возвращает количество рецептов с этим тегом."""
-        return tag.recipe_set.count()
+        return tag.recipes.count()
