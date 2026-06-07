@@ -7,4 +7,5 @@ urlpatterns = [
     path('api/', include('ingredients.urls')),
     path('api/', include('recipes.urls')),
     path('api/', include('users.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
 ]
