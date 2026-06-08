@@ -18,9 +18,9 @@ class RecipeFilter(django_filters.FilterSet):
 
     def filter_tags(self, queryset, name, value):
         """Фильтрует рецепты по slug тега."""
-        return queryset.filter(tag__slug=value)
+        return queryset.filter(tags__slug=value)
 
-    def filter_is_favorite(self, queryset, name, value):
+    def filter_is_favorited(self, queryset, name, value):
         """Фильтрует рецепты по наличию в избранном у текущего пользователя."""
         if value and self.request and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
