@@ -45,9 +45,35 @@ class RecipeViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.AllowAny,)
         return super().get_permissions()
 
-    def perform_create(self, serializer):
-        """Дополняет данные автором."""
-        serializer.save(author=self.request.user)
+    def create(self, request, *args, **kwargs):
+        """Создаёт рецепт и возвращает полное представление."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save(author=self.request.user)
+        response_serializer = RecipeListSerializer(
+            instance, context={'request': request}
+        )
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_201_CREATED
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Обновляет рецепт и возвращает полное представление."""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial,
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = RecipeListSerializer(
+            instance,
+            context={'request': request}
+        )
+        return Response(response_serializer.data)
 
     @action(
         detail=True,
