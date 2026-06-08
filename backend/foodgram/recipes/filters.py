@@ -1,5 +1,4 @@
 import django_filters
-from django.db.models import Q
 from .models import Recipe
 
 
@@ -26,7 +25,7 @@ class RecipeFilter(django_filters.FilterSet):
         if value and self.request and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
-    
+
     def filter_is_in_shopping_cart(self, queryset, name, value):
         """Фильтрует рецепты.
 
@@ -35,4 +34,3 @@ class RecipeFilter(django_filters.FilterSet):
         if value and self.request and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)
         return queryset
-    

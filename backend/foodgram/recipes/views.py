@@ -3,6 +3,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from .filters import RecipeFilter
 from .models import Recipe, Favorite, ShoppingCart
 from .serializers import (
     RecipeListSerializer,
@@ -25,6 +26,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Отображает рецепты: CRUD, избранное, корзину, короткую ссылку."""
 
     queryset = Recipe.objects.all()
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         """Выбирает нужный сериализатор для текущего запроса."""
