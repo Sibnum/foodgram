@@ -110,6 +110,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Нужно указать хотя бы один ингредиент."
             )
+        ingredient_ids = [
+            item['id'] for item in value if isinstance(item, dict)
+        ]
+        if len(ingredient_ids) != len(set(ingredient_ids)):
+            raise serializers.ValidationError(
+                'Ингредиенты не должны повторяться.'
+            )
         for item in value:
             if not isinstance(item, dict):
                 raise serializers.ValidationError(
@@ -135,6 +142,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Нужно указать хотя бы один тег.'
             )
+        if len(value) != len(set(value)):
+            raise serializers.ValidationError('Теги не должны повторяться.')
         return value
 
     def create(self, validated_data):
