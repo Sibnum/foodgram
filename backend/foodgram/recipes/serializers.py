@@ -84,12 +84,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             child=serializers.IntegerField(),
             allow_empty=False
         ),
-        write_only=True
+        write_only=True,
+        required=True
     )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
-        write_only=True
+        write_only=True,
+        required=True
     )
 
     class Meta:
@@ -145,6 +147,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if len(value) != len(set(value)):
             raise serializers.ValidationError('Теги не должны повторяться.')
         return value
+
+    def validate(self, attrs):
+        """Проверяет наличие обязательных полей даже при PATCH."""
+        if 'ingredients' not in self.initial_data:
+            raise serializers.ValidationError(
+                {'ingredients': 'Обязательное поле.'}
+            )
+        if 'tags' not in self.initial_data:
+            raise serializers.ValidationError(
+                {'tags': 'Обязательное поле.'}
+            )
+        return attrs
 
     def create(self, validated_data):
         """Создаёт рецепт."""
