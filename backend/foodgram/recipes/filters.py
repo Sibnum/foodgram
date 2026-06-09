@@ -13,7 +13,7 @@ class RecipeFilter(django_filters.FilterSet):
     """Фильтр для рецептов по автору, избранному, корзине и тегам."""
 
     author = django_filters.NumberFilter(field_name='author__id')
-    tags = django_filters.CharFilterInFilter(
+    tags = CharFilterInFilter(
         field_name='tags__slug',
         method='filter_tags'
     )
