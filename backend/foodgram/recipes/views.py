@@ -136,3 +136,33 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
         return Response({'short-link': recipe.short_link})
+
+    @action(
+        detail=False,
+        methods=['GET'],
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        """Скачивает файл со списком покупок."""
+        cart_items = (
+            ShoppingCart.objects
+            .filter(user=request.user)
+            .select_related('recipe')
+        )
+        ingredients = {}
+        for item in cart_items:
+            recipe_ingredients = item.recipe.ingredient_list.all()
+            for ing in recipe_ingredients:
+                name = ing.ingredient.name
+                unit = ing.ingredient.measurement_unit
+                key = f"{name} ({unit})"
+                if key in ingredients:
+                    ingredients[key] += ing.amount
+                else:
+                    ingredients[key] = ing.amount
+        lines = ["Список покупок: \n"]
+        for name, amount in ingredients.items():
+            lines.append(f"{name} - {amount}")
+        content = "\n".join(lines)
+        return Response(content, content_type='text/plain; charset=utf-8')
+     
