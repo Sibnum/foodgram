@@ -97,11 +97,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED
             )
 
-        subscription = get_object_or_404(
-            Subscription,
+        subscription = Subscription.objects.filter(
             user=request.user,
             author=author,
-        )
+        ).first()
+        if not subscription:
+            return Response(
+                {'errors': 'Подписка не найдена.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
