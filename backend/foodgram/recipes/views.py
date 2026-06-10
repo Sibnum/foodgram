@@ -43,6 +43,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 permissions.IsAuthenticated,
                 IsAuthorOrReadOnly
             )
+        elif self.action in (
+            'favorite',
+            'shopping_cart',
+            'download_shopping_cart'
+        ):
+            self.permission_classes = (permissions.IsAuthenticated,)
         else:
             self.permission_classes = (permissions.AllowAny,)
         return super().get_permissions()
@@ -165,4 +171,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
             lines.append(f"{name} - {amount}")
         content = "\n".join(lines)
         return Response(content, content_type='text/plain; charset=utf-8')
-     
