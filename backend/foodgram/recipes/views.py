@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -46,7 +45,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif self.action in (
             'favorite',
             'shopping_cart',
-            'download_shopping_cart'
+            'download_shopping_cart',
         ):
             self.permission_classes = (permissions.IsAuthenticated,)
         else:
@@ -141,7 +140,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['GET'], url_path='get-link')
     def get_link(self, request, pk=None):
         """Генерирует короткую ссылку, если её ещё нет."""
         recipe = self.get_object()
