@@ -100,11 +100,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save(user=request.user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        favorite = get_object_or_404(
-            Favorite,
+        favorite = Favorite.objects.filter(
             user=request.user,
             recipe=recipe
-        )
+        ).first()
+        if not favorite:
+            return Response(
+                {'errors': 'Рецепт отсутствует в избранном.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -125,11 +129,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save(user=request.user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        cart_item = get_object_or_404(
-            ShoppingCart,
+        cart_item = ShoppingCart.objects.filter(
             user=request.user,
             recipe=recipe
-        )
+        ).first()
+        if not cart_item:
+            return Response(
+                {'errors': 'Рецепт отсутствует в списке покупок.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
