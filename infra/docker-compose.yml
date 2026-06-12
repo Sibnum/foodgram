@@ -14,10 +14,7 @@ services:
     restart: always
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    container_name: foodgram-backend
+    image: sibnum/foodgram_backend
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -28,10 +25,7 @@ services:
     restart: always
 
   frontend:
-    container_name: foodgram-front
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: sibnum/foodgram_frontend
     volumes:
       - ../frontend/build:/app/build
     depends_on:
