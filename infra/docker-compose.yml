@@ -14,7 +14,8 @@ services:
     restart: always
 
   backend:
-    image: sibnum/foodgram_backend
+    image: sibnum/foodgram_backend:latest
+    container_name: foodgram_backend
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -25,7 +26,8 @@ services:
     restart: always
 
   frontend:
-    image: sibnum/foodgram_frontend
+    image: sibnum/foodgram_frontend:latest
+    container_name: foodgram_frontend
     volumes:
       - ../frontend/build:/app/build
     depends_on:
