@@ -14,6 +14,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
+# entrypoint.sh копируется вместе с остальными папками сл. командой
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "foodgram.wsgi"]
+RUN chmod +x entrypoint.sh 
+
+ENTRYPOINT [ "./entrypoint.sh" ]

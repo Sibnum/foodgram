@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Applying migration..."
+echo "Applying migrations..."
 python manage.py migrate --noinput
 
 echo "Collecting static files..."
