@@ -15,6 +15,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir
 
 COPY foodgram/ ./foodgram/
+COPY data/ ./data/
 COPY entrypoint.sh .
 
 RUN chmod +x entrypoint.sh
