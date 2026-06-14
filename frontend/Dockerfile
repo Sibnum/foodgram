@@ -1,4 +1,4 @@
-FROM node:21-alpine as build
+FROM node:21-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,4 +8,3 @@ RUN npm install --legacy-peer-deps
 COPY . ./
 
 RUN npm run build
-RUN cp -r /app/build/* /app/build/
