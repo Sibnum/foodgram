@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+cd foodgram/
+
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
