@@ -46,7 +46,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
         run: |
-          cd backend/
+          cd backend/foodgram
           python manage.py test
 
   build_and_push:
