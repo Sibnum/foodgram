@@ -15,7 +15,7 @@ from ingredients.models import Ingredient
 
 from foodgram.settings import BASE_DIR
 
-DATA_DIR = BASE_DIR.parent.parent / 'data'
+DATA_DIR = BASE_DIR.parent / 'data'
 
 
 class Command(BaseCommand):
