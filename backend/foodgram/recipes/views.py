@@ -1,15 +1,11 @@
-from rest_framework import viewsets, status, permissions
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .filters import RecipeFilter
-from .models import Recipe, Favorite, ShoppingCart
-from .serializers import (
-    RecipeListSerializer,
-    RecipeCreateSerializer,
-    FavoriteSerializer,
-    ShoppingCartSerializer
-)
+from .models import Favorite, Recipe, ShoppingCart
+from .serializers import (FavoriteSerializer, RecipeCreateSerializer,
+                          RecipeListSerializer, ShoppingCartSerializer)
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):

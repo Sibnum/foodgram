@@ -11,9 +11,9 @@
 import csv
 
 from django.core.management.base import BaseCommand
-from foodgram.settings import BASE_DIR
 from ingredients.models import Ingredient
 
+from foodgram.settings import BASE_DIR
 
 DATA_DIR = BASE_DIR.parent.parent / 'data'
 

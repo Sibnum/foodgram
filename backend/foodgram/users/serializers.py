@@ -1,7 +1,8 @@
-from rest_framework import serializers
-from .models import User
-from recipes.minified_serializer import RecipeMinifiedSerializer
 from fields import Base64ImageField
+from recipes.minified_serializer import RecipeMinifiedSerializer
+from rest_framework import serializers
+
+from .models import User
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

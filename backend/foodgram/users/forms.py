@@ -1,5 +1,6 @@
 # backend/foodgram/users/forms.py
 from django.contrib.auth.forms import UserCreationForm
+
 from .models import User
 
 
