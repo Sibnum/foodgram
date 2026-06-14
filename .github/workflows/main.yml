@@ -95,7 +95,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "infra/docker-compose.yml,infra/nginx.conf"
+          source: "infra/docker-compose.yml,infra/nginx.conf,docs/"
           target: "foodgram"
           strip_components: 1
       - name: Deploy

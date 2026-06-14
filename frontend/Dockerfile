@@ -8,3 +8,4 @@ RUN npm install --legacy-peer-deps
 COPY . ./
 
 RUN npm run build
+RUN cp -r /app/build/* /app/build/

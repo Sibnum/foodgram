@@ -14,9 +14,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-# entrypoint.sh копируется вместе с остальными папками сл. командой
-COPY . .
+COPY foodgram/ ./foodgram/
+COPY entrypoint.sh .
 
-RUN chmod +x entrypoint.sh 
+RUN chmod +x entrypoint.sh
 
 ENTRYPOINT [ "./entrypoint.sh" ]
