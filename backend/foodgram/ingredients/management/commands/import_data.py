@@ -11,11 +11,11 @@
 import csv
 
 from django.core.management.base import BaseCommand
+from pathlib import Path
 from ingredients.models import Ingredient
 
-from foodgram.settings import BASE_DIR
 
-DATA_DIR = BASE_DIR.parent / 'data'
+DATA_DIR = Path('/app') / 'data'
 
 
 class Command(BaseCommand):

@@ -10,13 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install gunicorn==26.0.0
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-COPY foodgram/ ./foodgram/
+COPY backend/foodgram/ ./foodgram/
 COPY data/ ./data/
-COPY entrypoint.sh .
+COPY backend/entrypoint.sh .
 
 RUN chmod +x entrypoint.sh
 
