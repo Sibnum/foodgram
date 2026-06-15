@@ -75,6 +75,12 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
+      - name: Build and push gateway
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nginx
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_gateway:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -96,7 +102,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "infra/docker-compose.yml,infra/nginx.conf,docs/"
+          source: "infra/docker-compose.yml,docs/"
           target: "foodgram"
           strip_components: 1
       - name: Deploy
