@@ -189,6 +189,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """Обновляет рецепт."""
         ingredients_data = validated_data.pop('ingredients', None)
         tags_data = validated_data.pop('tags', None)
+        image_data = validated_data.pop('image', None)
         if ingredients_data is not None:
             instance.ingredient_list.all().delete()
             bulk_ingredients = [
@@ -202,7 +203,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             IngredientInRecipes.objects.bulk_create(bulk_ingredients)
         if tags_data is not None:
             instance.tags.set(tags_data)
-        return super().update(instance, validated_data)
+        if image_data is not None:
+            instance.image = image_data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
