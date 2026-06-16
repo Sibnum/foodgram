@@ -2,6 +2,7 @@ volumes:
   postgres_data:
   static_value:
   media_value:
+  frontend_static:
 
 services:
   db:
@@ -28,6 +29,8 @@ services:
   frontend:
     image: sibnum/foodgram_frontend:latest
     container_name: foodgram_frontend
+    volumes:
+      - frontend_static:/app/build
     env_file:
       - .env
     depends_on:
@@ -43,6 +46,7 @@ services:
       - ./docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
+      - frontend_static:/usr/share/nginx/html
     depends_on:
       - backend
       - frontend
