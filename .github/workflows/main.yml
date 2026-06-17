@@ -124,8 +124,8 @@ jobs:
           script: |
             cd foodgram
             sudo docker container prune -f
-            sudo docker image prune -a -f
-            sudo docker volume prune -f
+            sudo docker image prune -f
+            sudo docker builder prune -f
 
   notify:
     runs-on: ubuntu-latest
