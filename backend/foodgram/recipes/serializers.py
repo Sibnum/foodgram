@@ -1,5 +1,6 @@
-from fields import Base64ImageField
 from rest_framework import serializers
+
+from fields import Base64ImageField
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
 

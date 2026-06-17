@@ -9,11 +9,11 @@
     python manage.py import_data --path=/my/path/ingredients.csv
 """
 import csv
+from pathlib import Path
 
 from django.core.management.base import BaseCommand
-from pathlib import Path
-from ingredients.models import Ingredient
 
+from ingredients.models import Ingredient
 
 DATA_DIR = Path('/app') / 'data'
 
