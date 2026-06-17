@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -145,7 +146,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             import secrets
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
-        return Response({'short-link': recipe.short_link})
+        full_url = request.build_absolute_uri(f'/s/{recipe.short_link}/')
+        return Response({'short-link': full_url})
 
     @action(
         detail=False,
@@ -175,3 +177,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             lines.append(f"{name} - {amount}")
         content = "\n".join(lines)
         return HttpResponse(content, content_type='text/plain; charset=utf-8')
+
+
+def redirect_by_short_link(request, short_link):
+    """Перенаправляет с короткой ссылки на страницу рецепта."""
+    recipe = get_object_or_404(Recipe, short_link=short_link)
+    return redirect('recipe-detail', pk=recipe.pk)

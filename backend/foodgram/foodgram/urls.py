@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path
 
+from recipes.views import redirect_by_short_link
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('tags.urls')),
@@ -8,4 +10,9 @@ urlpatterns = [
     path('api/', include('recipes.urls')),
     path('api/', include('users.urls')),
     path('api/auth/', include('djoser.urls.authtoken')),
+    path(
+        's/<slug:short_link>/',
+        redirect_by_short_link,
+        name='short-link-redirect'
+    ),
 ]
