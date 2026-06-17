@@ -28,6 +28,9 @@ ALLOWED_HOSTS = [
     host.strip() for host in allowed_hosts_str.split(',') if host.strip()
 ]
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -135,6 +138,8 @@ cors_origins_str = os.getenv(
 CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in cors_origins_str.split(',') if origin.strip()
 ]
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [

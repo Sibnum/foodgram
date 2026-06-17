@@ -146,7 +146,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             import secrets
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
-        full_url = request.build_absolute_uri(f'/s/{recipe.short_link}/')
+        full_url = f'https://{request.get_host()}/s/{recipe.short_link}/'
         return Response({'short-link': full_url})
 
     @action(
