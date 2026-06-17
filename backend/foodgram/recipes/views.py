@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -173,4 +174,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for name, amount in ingredients.items():
             lines.append(f"{name} - {amount}")
         content = "\n".join(lines)
-        return Response(content, content_type='text/plain; charset=utf-8')
+        return HttpResponse(content, content_type='text/plain; charset=utf-8')
