@@ -169,7 +169,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     ingredients[key] += ing.amount
                 else:
                     ingredients[key] = ing.amount
-        lines = ["Список покупок: \n"]
+        lines = ["Список покупок:"]
         for name, amount in ingredients.items():
             lines.append(f"{name} - {amount}")
         content = "\n".join(lines)
