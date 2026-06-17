@@ -182,4 +182,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
 def redirect_by_short_link(request, short_link):
     """Перенаправляет с короткой ссылки на страницу рецепта."""
     recipe = get_object_or_404(Recipe, short_link=short_link)
-    return redirect('recipe-detail', pk=recipe.pk)
+    return redirect(f'/recipes/{recipe.pk}/')
