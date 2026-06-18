@@ -4,11 +4,11 @@ from django.urls import include, path
 from recipes.views import redirect_by_short_link
 
 api_patterns = [
-    path('api/', include('tags.urls')),
-    path('api/', include('ingredients.urls')),
-    path('api/', include('recipes.urls')),
-    path('api/', include('users.urls')),
-    path('api/auth/', include('djoser.urls.authtoken')),
+    path('', include('tags.urls')),
+    path('', include('ingredients.urls')),
+    path('', include('recipes.urls')),
+    path('', include('users.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
 
 urlpatterns = [
