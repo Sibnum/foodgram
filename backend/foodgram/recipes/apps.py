@@ -12,5 +12,6 @@ class RecipesConfig(AppConfig):
     Определяет настройки приложения Рецепты.
     Описывает имя приложения и отображаемое имя.
     """
+
     name = 'recipes'
     verbose_name = 'Рецепты'
