@@ -3,6 +3,12 @@ from django.contrib import admin
 from .models import Favorite, IngredientInRecipes, Recipe, ShoppingCart
 
 
+class SearchFieldsAdmin(admin.ModelAdmin):
+    """Определяет базовые поля для поиска."""
+
+    search_fields = ('user__username', 'recipe__name')
+
+
 class IngredientInRecipesInline(admin.TabularInline):
     """Редактирование ингредиентов на странице рецептов."""
 
@@ -53,7 +59,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Favorite)
-class FavoriteAdmin(admin.ModelAdmin):
+class FavoriteAdmin(SearchFieldsAdmin):
     """Администрирование избранного.
 
     Предоставляет интерфейс для просмотра избранных рецептов пользователей.
@@ -61,11 +67,10 @@ class FavoriteAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'recipe', 'created_at')
     list_filter = ('user',)
-    search_fields = ('user__username', 'recipe__name')
 
 
 @admin.register(ShoppingCart)
-class ShoppingCartAdmin(admin.ModelAdmin):
+class ShoppingCartAdmin(SearchFieldsAdmin):
     """Администрирование списка покупок.
 
     Предоставляет интерфейс для просмотра списков покупок пользователей.
@@ -73,4 +78,3 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'recipe', 'created_at')
     list_filter = ('user',)
-    search_fields = ('user__username', 'recipe__name')
