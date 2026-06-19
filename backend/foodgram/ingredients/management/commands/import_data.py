@@ -20,6 +20,7 @@ DATA_DIR = Path('/app') / 'data'
 
 class Command(BaseCommand):
     """Команда для импорта ингредиентов из CSV в БД."""
+
     help = 'Импортирует ингредиенты из СSV в БД'
 
     def add_arguments(self, parser):
