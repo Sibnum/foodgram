@@ -1,6 +1,12 @@
+"""Фильтры DRF для API приложения Foodgram.
+
+Содержит RecipeFilter — фильтр для рецептов по автору,
+тегам (slug), избранному и списку покупок текущего пользователя.
+"""
+
 import django_filters
 
-from .models import Recipe
+from recipes.models import Recipe
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -31,9 +37,10 @@ class RecipeFilter(django_filters.FilterSet):
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        """Фильтрует рецепты.
+        """Фильтрует рецепты в списке покупок.
 
-        По наличию в списке покупок у текущего пользователя.
+        Фильтрует рецепты по наличию в списке покупок у текущего
+        пользователя.
         """
         if value and self.request and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)

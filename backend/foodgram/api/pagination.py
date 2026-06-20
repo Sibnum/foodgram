@@ -1,3 +1,9 @@
+"""Пагинация DRF для API приложения Foodgram.
+
+Содержит LimitPaginator — пагинатор с поддержкой
+query-параметра limit для настройки количества элементов на странице.
+"""
+
 from rest_framework.pagination import PageNumberPagination
 
 
