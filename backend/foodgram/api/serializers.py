@@ -162,19 +162,30 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для вывода ингредиента в рецепте с количеством."""
 
-    id = serializers.ReadOnlyField(
-        source='ingredient.id'
+    id = serializers.SlugRelatedField(
+        source='ingredient',
+        read_only=True,
+        slug_field='id',
     )
-    name = serializers.ReadOnlyField(
-        source='ingredient.name'
+    name = serializers.SlugRelatedField(
+        source='ingredient',
+        read_only=True,
+        slug_field='name',
     )
-    measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
+    measurement_unit = serializers.SlugRelatedField(
+        source='ingredient',
+        read_only=True,
+        slug_field='measurement_unit',
     )
 
     class Meta:
         model = IngredientInRecipes
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = (
+            'id',
+            'name',
+            'measurement_unit',
+            'amount',
+        )
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
