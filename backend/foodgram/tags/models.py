@@ -6,17 +6,17 @@ class Tag(models.Model):
     """Модель тега для рецептов."""
 
     name = models.CharField(
-        _('Название'),
+        verbose_name=_('Название'),
         max_length=32,
         unique=True,
-        help_text=_('Название тега')
+        help_text=_('Название тега'),
     )
     slug = models.SlugField(
-        _('Слаг'),
+        verbose_name=_('Слаг'),
         max_length=32,
         null=True,
         unique=True,
-        help_text=_('Уникальный слаг для URL')
+        help_text=_('Уникальный слаг для URL'),
     )
 
     class Meta:
@@ -25,4 +25,5 @@ class Tag(models.Model):
         ordering = ['name']
 
     def __str__(self):
+        """Возвращает название тега."""
         return self.name

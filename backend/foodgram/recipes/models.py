@@ -15,49 +15,51 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name=_('Автор'),
-        help_text=_('Автор публикации')
+        help_text=_('Автор публикации'),
     )
     name = models.CharField(
-        _('Название'),
+        verbose_name=_('Название'),
         max_length=256,
-        help_text=_('Название рецепта')
+        help_text=_('Название рецепта'),
     )
     image = models.ImageField(
-        _('Картинка'),
+        verbose_name=_('Изображение'),
         upload_to='recipes/image/',
-        help_text=_('Изображение блюда')
+        help_text=_('Изображение блюда'),
     )
     text = models.TextField(
-        _('Описание'),
-        help_text=_('Текстовое описание рецепта')
+        verbose_name=_('Описание'),
+        help_text=_('Описание рецепта'),
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientInRecipes',
         through_fields=('recipe', 'ingredient'),
         verbose_name=_('Ингредиенты'),
-        help_text=_('Ингредиенты для приготовления')
+        help_text=_('Ингредиенты для приготовления'),
     )
     tags = models.ManyToManyField(
         Tag,
         verbose_name=_('Теги'),
-        help_text=_('Теги рецепта')
+        help_text=_('Теги рецепта'),
     )
     cooking_time = models.PositiveSmallIntegerField(
-        _('Время приготовления (в минутах)'),
+        verbose_name=_('Время приготовления'),
         validators=[MinValueValidator(1)],
-        help_text=_('Дата создания')
+        help_text=_('Время приготовления рецепта в минутах'),
     )
     short_link = models.CharField(
-        _('Короткая ссылка'),
+        verbose_name=_('Короткая ссылка'),
         max_length=10,
         unique=True,
         blank=True,
         null=True,
-        help_text=_('Короткая ссылка на рецепт')
+        help_text=_('Короткая ссылка на рецепт'),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
+        verbose_name=_('Дата создания'),
+        help_text=_('Дата и время создания рецепта'),
     )
 
     class Meta:
@@ -67,6 +69,7 @@ class Recipe(models.Model):
         default_related_name = 'recipes'
 
     def __str__(self):
+        """Возвращает название рецепта."""
         return self.name
 
 
@@ -77,7 +80,7 @@ class IngredientInRecipes(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         related_name='ingredient_list',
-        verbose_name=_('Рецепт')
+        verbose_name=_('Рецепт'),
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -85,9 +88,9 @@ class IngredientInRecipes(models.Model):
         verbose_name=_('Ингредиент'),
     )
     amount = models.PositiveSmallIntegerField(
-        _('Количество'),
+        verbose_name=_('Количество'),
         validators=[MinValueValidator(1)],
-        help_text=_('Количество ингредиента в рецепте')
+        help_text=_('Количество ингредиента в рецепте'),
     )
 
     class Meta:
@@ -96,11 +99,12 @@ class IngredientInRecipes(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
-                name='unique_recipe_ingredient'
+                name='unique_recipe_ingredient',
             )
         ]
 
     def __str__(self):
+        """Возвращает название ингредиента с указанием кол-ва и мерой."""
         return (
             f'{self.ingredient.name} - {self.amount} '
             f'{self.ingredient.measurement_unit}'
@@ -114,17 +118,17 @@ class Favorite(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='favorites',
-        verbose_name=_('Пользователь')
+        verbose_name=_('Пользователь'),
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='favorites',
-        verbose_name=_('Рецепт')
+        verbose_name=_('Рецепт'),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name=_('Дата добавления')
+        verbose_name=_('Дата добавления'),
     )
 
     class Meta:
@@ -133,12 +137,13 @@ class Favorite(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_favorite'
+                name='unique_favorite',
             )
         ]
 
     def __str__(self):
-        return f'{self.user.username} -> {self.recipe.name}'
+        """Возвращает имя пользователя -> название рецепта (избранное)."""
+        return f'{self.user.username} -> {self.recipe.name} (избранное)'
 
 
 class ShoppingCart(models.Model):
@@ -148,28 +153,29 @@ class ShoppingCart(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
-        verbose_name=_('Пользователь')
+        verbose_name=_('Пользователь'),
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
-        verbose_name=_('Рецепт')
+        verbose_name=_('Рецепт'),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name=_('Дата добавления')
+        verbose_name=_('Дата добавления'),
     )
 
     class Meta:
         verbose_name = _('Список покупок')
-        verbose_name_plural = _('Список покупок')
+        verbose_name_plural = _('Списки покупок')
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_shopping_cart'
+                name='unique_shopping_cart',
             )
         ]
 
     def __str__(self):
-        return f'{self.user.username} -> {self.recipe.name}'
+        """Возвращает имя пользователя -> название рецепта (список покупок)."""
+        return f'{self.user.username} -> {self.recipe.name} (список покупок)'

@@ -10,19 +10,19 @@ class User(AbstractUser):
     """
 
     first_name = models.CharField(
-        _('Имя'),
+        verbose_name=_('Имя'),
         max_length=150,
         blank=False,
         help_text=_('Обязательное поле. Максимум 150 символов.')
     )
     last_name = models.CharField(
-        _('Фамилия'),
+        verbose_name=_('Фамилия'),
         max_length=150,
         blank=False,
         help_text=_('Обязательное поле. Максимум 150 символов.')
     )
     email = models.EmailField(
-        _('Адрес электронной почты'),
+        verbose_name=_('Адрес электронной почты'),
         blank=False,
         unique=True,
         help_text=_('Обязательное поле. Укажите действующий email.')
@@ -119,4 +119,5 @@ class Subscription(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
+        """Возвращает на какого автора подписан пользователь."""
         return f'{self.user.username} подписан на {self.author.username}'
