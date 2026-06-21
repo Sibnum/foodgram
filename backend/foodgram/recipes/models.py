@@ -107,7 +107,7 @@ class IngredientInRecipes(models.Model):
         verbose_name_plural = _('Ингредиенты в рецепте')
         constraints = [
             models.UniqueConstraint(
-                fields=['recipe', 'ingredient'],
+                fields=('recipe', 'ingredient'),
                 name='unique_recipe_ingredient',
             )
         ]
@@ -120,7 +120,19 @@ class IngredientInRecipes(models.Model):
         )
 
 
-class Favorite(models.Model):
+class CreatedAtMixin(models.Model):
+    """Абстрактный миксин, добавляющий поле created_at."""
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Дата добавления'),
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Favorite(CreatedAtMixin):
     """Модель избранного (связь пользователей и рецепта)."""
 
     user = models.ForeignKey(
@@ -134,10 +146,6 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         related_name='favorites',
         verbose_name=_('Рецепт'),
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_('Дата добавления'),
     )
 
     class Meta:
@@ -155,7 +163,7 @@ class Favorite(models.Model):
         return f'{self.user.username} -> {self.recipe.name} (избранное)'
 
 
-class ShoppingCart(models.Model):
+class ShoppingCart(CreatedAtMixin):
     """Модель списка покупок (связь пользователя и рецепта)."""
 
     user = models.ForeignKey(
@@ -169,10 +177,6 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         related_name='shopping_cart',
         verbose_name=_('Рецепт'),
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_('Дата добавления'),
     )
 
     class Meta:
