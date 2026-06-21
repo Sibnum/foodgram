@@ -44,13 +44,12 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Обрабатывает GET /api/ingredients/ и GET /api/ingredients/{id}/."""
 
-    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
 
     def get_queryset(self):
         """Возвращает полный или фильтрованный по name queryset."""
-        queryset = self.queryset
+        queryset = Ingredient.objects.all()
         name = self.request.query_params.get('name')
         if name:
             queryset = queryset.filter(name__istartswith=name)

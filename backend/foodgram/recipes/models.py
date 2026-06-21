@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -45,7 +45,16 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name=_('Время приготовления'),
-        validators=[MinValueValidator(1)],
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(
+                1440,
+                message=_(
+                    'Время приготовления не может превышать 24 часа'
+                    ' (1440 минут)'
+                )
+            )
+        ],
         help_text=_('Время приготовления рецепта в минутах'),
     )
     short_link = models.CharField(

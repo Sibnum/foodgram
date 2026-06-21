@@ -23,8 +23,8 @@ class RecipeFilter(django_filters.FilterSet):
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
 
-    def filter_tags(self, queryset, name, value):
-        """Фильтрует рецепты по slug тега."""
+    def filter_tags(self, queryset, name, _):
+        """Фильтрует рецепты по slug тега. Параметр _ не используется."""
         tags = self.request.GET.getlist('tags')
         if tags:
             return queryset.filter(tags__slug__in=tags).distinct()
