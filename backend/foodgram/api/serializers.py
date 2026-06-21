@@ -188,6 +188,20 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         )
 
 
+class IngredientInputSerializer(serializers.Serializer):
+    """Сериализатор для одного ингредиента во входных данных рецепта."""
+
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField(min_value=1)
+
+    def validate_id(self, value):
+        if not Ingredient.objects.filter(id=value).exists():
+            raise serializers.ValidationError(
+                f'Ингредиент с id={value} не найден.'
+            )
+        return value
+
+
 class RecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор для чтения рецептов и рецептов пользователя.
 
@@ -246,11 +260,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     """
 
     image = Base64ImageField()
-    ingredients = serializers.ListField(
-        child=serializers.DictField(
-            child=serializers.IntegerField(),
-            allow_empty=False
-        ),
+    ingredients = IngredientInputSerializer(
+        many=True,
         write_only=True,
         required=True,
     )
@@ -279,30 +290,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Нужно указать хотя бы один ингредиент."
             )
-        ingredient_ids = [
-            item['id'] for item in value if isinstance(item, dict)
-        ]
+        ingredient_ids = [item['id'] for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
                 'Ингредиенты не должны повторяться.'
             )
-        for item in value:
-            if not isinstance(item, dict):
-                raise serializers.ValidationError(
-                    'Каждый ингредиент должен быть объектом {id, amount}'
-                )
-            if 'id' not in item or 'amount' not in item:
-                raise serializers.ValidationError(
-                    'У каждого ингредиента должны быть поля id и amount.'
-                )
-            if not Ingredient.objects.filter(id=item['id']).exists():
-                raise serializers.ValidationError(
-                    f'Ингредиент с id={item["id"]} не найден.'
-                )
-            if item['amount'] < 1:
-                raise serializers.ValidationError(
-                    'Количество ингредиента должно быть >= 1.'
-                )
         return value
 
     def validate_tags(self, value):
