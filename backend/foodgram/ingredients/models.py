@@ -20,7 +20,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = _('Ингредиент')
         verbose_name_plural = _('Ингредиенты')
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self):
         """Возвращает название ингредиента."""

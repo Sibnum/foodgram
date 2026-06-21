@@ -65,7 +65,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = _('Пользователь')
         verbose_name_plural = _('Пользователи')
-        ordering = ['-date_joined']
+        ordering = ('-date_joined',)
 
     def __str__(self):
         """Возвращает имя пользователя."""
@@ -116,7 +116,7 @@ class Subscription(models.Model):
                 name='unique_subscription'
             )
         ]
-        ordering = ['-created_at']
+        ordering = ('-created_at',)
 
     def __str__(self):
         """Возвращает на какого автора подписан пользователь."""
