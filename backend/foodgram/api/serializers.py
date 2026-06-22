@@ -292,10 +292,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Нужно указать хотя бы один ингредиент.'
             )
+        if not isinstance(value, list):
+            type_value = type(value)
+            raise serializers.ValidationError(
+                f'Ожидался список ингредиентов, получен '
+                f'{type_value.__name__}: {value}'
+            )
         ingredient_ids = [item['id'] for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
-                'Ингредиенты не должны повторяться.'
+                f'Ингредиенты не должны повторяться. '
+                f'Получены id: {ingredient_ids}'
             )
         return value
 
