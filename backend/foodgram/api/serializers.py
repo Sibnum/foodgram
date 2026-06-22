@@ -330,15 +330,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Создаёт рецепт."""
-        validated_data.pop('author', None)
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        image_data = validated_data.pop('image')
+        data = validated_data.copy()
+        ingredients_data = data.pop('ingredients')
+        tags_data = data.pop('tags')
+        image_data = data.pop('image')
+        data.pop('author', None)
 
         recipe = Recipe.objects.create(
             author=self.context['request'].user,
             image=image_data,
-            **validated_data
+            **data
         )
         recipe.tags.set(tags_data)
 
@@ -355,11 +356,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Обновляет рецепт."""
-        ingredients_data = validated_data.pop('ingredients', None)
-        tags_data = validated_data.pop('tags', None)
-        image_data = validated_data.pop('image', None)
+        data = validated_data.copy()
+        ingredients_data = data.pop('ingredients', None)
+        tags_data = data.pop('tags', None)
+        image_data = data.pop('image', None)
         if ingredients_data is not None:
-            instance.ingredient_list.all().delete()
+            instance.ingredient_list.clear()
             bulk_ingredients = [
                 IngredientInRecipes(
                     recipe=instance,
@@ -373,10 +375,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             instance.tags.set(tags_data)
         if image_data is not None:
             instance.image = image_data
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+        return super().update(instance, data)
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
