@@ -267,13 +267,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientInputSerializer(
         many=True,
         write_only=True,
-        required=True,
     )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
         write_only=True,
-        required=True,
     )
 
     class Meta:
@@ -292,7 +290,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """Валидация списка ингредиентов."""
         if not value:
             raise serializers.ValidationError(
-                "Нужно указать хотя бы один ингредиент."
+                'Нужно указать хотя бы один ингредиент.'
             )
         ingredient_ids = [item['id'] for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
