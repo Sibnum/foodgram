@@ -241,16 +241,20 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, recipe):
         """Возвращает список избранного, если пользователь аутентифицирован."""
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return recipe.favorites.filter(user=request.user).exists()
-        return False
+        user_authenticated = request and request.user.is_authenticated
+        return (
+            user_authenticated
+            and recipe.favorites.filter(user=request.user).exists()
+        )
 
     def get_is_in_shopping_cart(self, recipe):
         """Возвращает список покупок, если пользователь аутентифицирован."""
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return recipe.shopping_cart.filter(user=request.user).exists()
-        return False
+        user_authenticated = request and request.user.is_authenticated
+        return (
+            user_authenticated
+            and recipe.shopping_cart.filter(user=request.user).exists()
+        )
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
