@@ -35,7 +35,7 @@ class RecipeFilter(django_filters.FilterSet):
             query = Q()
             for tag_slug in tags:
                 query |= Q(tags__slug=tag_slug)
-            queryset = queryset.filter(query)
+            queryset = queryset.filter(query).distinct()
         return queryset
 
     def filter_is_favorited(self, queryset, name, value):
