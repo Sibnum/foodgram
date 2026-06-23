@@ -15,7 +15,7 @@ from fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientInRecipes, Recipe,
                             ShoppingCart)
 from tags.models import Tag
-from users.models import User
+from users.models import Subscription, User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -112,6 +112,38 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания подписки (POST /api/users/{id}/subscribe/).
+
+    Валидация вынесена в сериализатор в соответствии с DRF-подходом:
+    проверка на самоподписку и на дубликат подписки.
+    """
+
+    class Meta:
+        model = Subscription
+        fields = ('user', 'author')
+
+    def validate(self, data):
+        """Валидация подписки: запрет самоподписки и дубликатов."""
+        user = data['user']
+        author = data['author']
+
+        if user == author:
+            raise serializers.ValidationError('Нельзя подписаться на себя.')
+
+        if Subscription.objects.filter(user=user, author=author).exists():
+            raise serializers.ValidationError('Уже подписан.')
+
+        return data
+
+    def to_representation(self, instance):
+        """При успешном создании возвращаем данные автора."""
+        return SubscriptionSerializer(
+            instance.author,
+            context=self.context,
+        ).data
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

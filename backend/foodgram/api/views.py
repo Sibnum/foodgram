@@ -18,8 +18,8 @@ from api.serializers import (CustomUserCreateSerializer, CustomUserSerializer,
                              FavoriteSerializer, IngredientSerializer,
                              RecipeCreateSerializer, RecipeListSerializer,
                              SetAvatarSerializer, SetPasswordSerializer,
-                             ShoppingCartSerializer, SubscriptionSerializer,
-                             TagSerializer)
+                             ShoppingCartSerializer, SubscribeSerializer,
+                             SubscriptionSerializer, TagSerializer)
 from ingredients.models import Ingredient
 from recipes.models import Recipe, ShoppingCart
 from tags.models import Tag
@@ -106,23 +106,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscribe(self, request, id=None):
         """Создаёт подписку на автора."""
         author = self.get_object()
-        if request.user == author:
-            return Response(
-                {'errors': 'Нельзя подписаться на себя.'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        _, created = Subscription.objects.get_or_create(
-            user=request.user, author=author
-        )
-        if not created:
-            return Response(
-                {'errors': 'Уже подписан.'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        serializer = SubscriptionSerializer(
-            author,
+        serializer = SubscribeSerializer(
+            data={'user': request.user.pk, 'author': author.pk},
             context=self.get_serializer_context(),
         )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
