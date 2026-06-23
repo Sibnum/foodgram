@@ -216,14 +216,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.AllowAny,)
         return super().get_permissions()
 
+    def get_response_serializer(self, instance):
+        """Возвращает сериализованый ответ."""
+        return RecipeListSerializer(
+            instance, context=self.get_serializer_context()
+        )
+
     def create(self, request, *args, **kwargs):
         """Создаёт рецепт и возвращает полное представление."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save(author=self.request.user)
-        response_serializer = RecipeListSerializer(
-            instance, context={'request': request}
-        )
+        response_serializer = self.get_response_serializer(instance)
         return Response(
             response_serializer.data, status=status.HTTP_201_CREATED
         )
@@ -237,9 +241,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
-        response_serializer = RecipeListSerializer(
-            instance, context={'request': request}
-        )
+        response_serializer = self.get_response_serializer(instance)
         return Response(response_serializer.data)
 
     @action(
@@ -252,7 +254,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             serializer = FavoriteSerializer(
                 data={'user': request.user.id, 'recipe': recipe.id},
-                context={'request': request},
+                context=self.get_serializer_context(),
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user, recipe=recipe)
