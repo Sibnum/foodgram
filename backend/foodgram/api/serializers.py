@@ -12,9 +12,8 @@
 from rest_framework import serializers
 
 from fields import Base64ImageField
-from recipes.models import (
-    Favorite, Ingredient, IngredientInRecipes, Recipe, ShoppingCart
-)
+from recipes.models import (Favorite, Ingredient, IngredientInRecipes, Recipe,
+                            ShoppingCart)
 from tags.models import Tag
 from users.models import User
 

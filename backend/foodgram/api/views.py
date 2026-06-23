@@ -14,21 +14,14 @@ from rest_framework.response import Response
 
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (
-    CustomUserCreateSerializer,
-    CustomUserSerializer,
-    FavoriteSerializer,
-    IngredientSerializer,
-    RecipeCreateSerializer,
-    RecipeListSerializer,
-    SetAvatarSerializer,
-    SetPasswordSerializer,
-    ShoppingCartSerializer,
-    SubscriptionSerializer,
-    TagSerializer,
-)
+from api.serializers import (CustomUserCreateSerializer, CustomUserSerializer,
+                             FavoriteSerializer, IngredientSerializer,
+                             RecipeCreateSerializer, RecipeListSerializer,
+                             SetAvatarSerializer, SetPasswordSerializer,
+                             ShoppingCartSerializer, SubscriptionSerializer,
+                             TagSerializer)
 from ingredients.models import Ingredient
-from recipes.models import Favorite, Recipe, ShoppingCart
+from recipes.models import Recipe, ShoppingCart
 from tags.models import Tag
 from users.models import Subscription, User
 

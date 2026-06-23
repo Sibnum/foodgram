@@ -3,7 +3,6 @@ from django.urls import include, path
 
 from recipes.views import redirect_by_short_link
 
-
 urlpatterns = [
     path(
         'admin/',
