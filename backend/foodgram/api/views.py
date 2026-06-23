@@ -199,7 +199,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Определяет набор разрешений для текущего запроса."""
-        if self.action in {'create',}:
+        if self.action in {'create', }:
             self.permission_classes = (permissions.IsAuthenticated,)
         elif self.action in {'partial_update', 'update', 'destroy'}:
             self.permission_classes = (
