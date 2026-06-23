@@ -105,38 +105,37 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = SubscriptionSerializer(
             page,
             many=True,
-            context={'request': request}
+            context=self.get_serializer_context(),
         )
         return self.get_paginated_response(serializer.data)
 
-    @action(detail=True, methods=['POST', 'DELETE'])
+    @action(detail=True, methods=['POST'])
     def subscribe(self, request, id=None):
-        """ Управление подписками: создание и удаление.
-
-        POST: подписаться на автора.
-        DELETE: отписаться от автора.
-        """
+        """Создаёт подписку на автора."""
         author = self.get_object()
-        if request.method == 'POST':
-            if request.user == author:
-                return Response(
-                    {'errors': 'Нельзя подписаться на себя.'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            _, created = Subscription.objects.get_or_create(
-                user=request.user, author=author
+        if request.user == author:
+            return Response(
+                {'errors': 'Нельзя подписаться на себя.'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-            if not created:
-                return Response(
-                    {'errors': 'Уже подписан.'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            serializer = SubscriptionSerializer(
-                author,
-                context={'request': request}
+        _, created = Subscription.objects.get_or_create(
+            user=request.user, author=author
+        )
+        if not created:
+            return Response(
+                {'errors': 'Уже подписан.'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = SubscriptionSerializer(
+            author,
+            context=self.get_serializer_context(),
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @subscribe.mapping.delete
+    def remove_subscribe(self, request, id=None):
+        """Убирает подписку на автора."""
+        author = self.get_object()
         subscription = Subscription.objects.filter(
             user=request.user,
             author=author,
@@ -153,7 +152,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def me(self, request):
         """Возвращает профиль текущего пользователя."""
         serializer = CustomUserSerializer(
-            request.user, context={'request': request}
+            request.user,
+            context=self.get_serializer_context(),
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -161,24 +161,27 @@ class UserViewSet(viewsets.ModelViewSet):
     def set_password(self, request):
         """Выполняет валидацию и смену пароля."""
         serializer = SetPasswordSerializer(
-            data=request.data, context={'request': request}
+            data=request.data,
+            context=self.get_serializer_context(),
         )
         serializer.is_valid(raise_exception=True)
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['PUT', 'DELETE'], url_path='me/avatar')
+    @action(detail=False, methods=['PUT'], url_path='me/avatar')
     def avatar(self, request):
-        """Обрабатывает обновление и удаление аватара пользователя."""
-        if request.method == 'PUT':
-            serializer = SetAvatarSerializer(
-                request.user, data=request.data,
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        """Обновляет аватар пользователя."""
+        serializer = SetAvatarSerializer(
+            request.user, data=request.data,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @avatar.mapping.delete
+    def remove_avatar(self, request):
+        """Удаляет аватар."""
         request.user.avatar.delete()
         request.user.avatar = None
         request.user.save()
@@ -245,21 +248,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(response_serializer.data)
 
     @action(
-        detail=True, methods=['POST', 'DELETE'],
+        detail=True, methods=['POST'],
         permission_classes=(permissions.IsAuthenticated,),
     )
     def favorite(self, request, pk=None):
-        """Обрабатывает добавление рецепта в избранные или удаление из него."""
+        """Добавляет рецепт в избранное."""
         recipe = self.get_object()
-        if request.method == 'POST':
-            serializer = FavoriteSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id},
-                context=self.get_serializer_context(),
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(user=request.user, recipe=recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = FavoriteSerializer(
+            data={'user': request.user.id, 'recipe': recipe.id},
+            context=self.get_serializer_context(),
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, recipe=recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @favorite.mapping.delete
+    def remove_from_favorite(self, request, pk=None):
+        """Удаляет рецепт из избранного."""
+        recipe = self.get_object()
         favorite = Favorite.objects.filter(
             user=request.user, recipe=recipe
         ).first()
@@ -272,21 +278,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        detail=True, methods=['POST', 'DELETE'],
+        detail=True, methods=['POST'],
         permission_classes=(permissions.IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
-        """Обрабатывает добавление или удаление продуктов из списка покупок."""
+        """Добавляет рецепт в список покупок."""
         recipe = self.get_object()
-        if request.method == 'POST':
-            serializer = ShoppingCartSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id},
-                context={'request': request},
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(user=request.user, recipe=recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = ShoppingCartSerializer(
+            data={'user': request.user.id, 'recipe': recipe.id},
+            context=self.get_serializer_context(),
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, recipe=recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @shopping_cart.mapping.delete
+    def remove_from_shopping_cart(self, request, pk=None):
+        """Удаляет рецепт из списка покупок."""
+        recipe = self.get_object()
         cart_item = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe
         ).first()
