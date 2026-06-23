@@ -273,7 +273,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True, methods=['POST', 'DELETE'],
-        permission_classes=[permissions.IsAuthenticated],
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
         """Обрабатывает добавление или удаление продуктов из списка покупок."""
