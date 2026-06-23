@@ -37,7 +37,7 @@ const HomePage = ({ updateOrders }) => {
   useEffect(_ => {
     api.getTags()
       .then(tags => {
-        setTagsValue(tags.map(tag => ({ ...tag, value: false })))
+        setTagsValue(tags.map(tag => ({ ...tag, value: true })))
       })
   }, [])
 
