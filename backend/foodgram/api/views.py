@@ -7,6 +7,8 @@
 - RecipeViewSet (рецепты: CRUD, избранное, корзина, короткая ссылка)
 """
 
+import secrets
+
 from django.http import HttpResponse
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -91,7 +93,7 @@ class UserViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.AllowAny,)
         return super().get_permissions()
 
-    @action(detail=False, methods=['GET'])
+    @action(detail=False)
     def subscriptions(self, request):
         """Возвращает пагинированный ответ со списком подписок пользователя."""
         authors = User.objects.filter(subscribers__user=request.user)
@@ -128,7 +130,7 @@ class UserViewSet(viewsets.ModelViewSet):
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['GET'])
+    @action(detail=False)
     def me(self, request):
         """Возвращает профиль текущего пользователя."""
         serializer = CustomUserSerializer(
@@ -277,19 +279,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['GET'], url_path='get-link')
+    @action(detail=True, url_path='get-link')
     def get_link(self, request, pk=None):
         """Генерирует короткую ссылку, если её ещё нет."""
         recipe = self.get_object()
         if not recipe.short_link:
-            import secrets
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
         full_url = f'https://{request.get_host()}/s/{recipe.short_link}/'
         return Response({'short-link': full_url})
 
     @action(
-        detail=False, methods=['GET'],
+        detail=False,
         permission_classes=[permissions.IsAuthenticated],
     )
     def download_shopping_cart(self, request):
