@@ -7,10 +7,11 @@
 - RecipeViewSet (рецепты: CRUD, избранное, корзина, короткая ссылка)
 """
 
+import io
 import secrets
 
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.urls import reverse
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -310,12 +311,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .annotate(total_amount=Sum('amount'))
             .order_by('ingredient__name')
         )
-        lines = ['Список покупок:']
-        for ing in ingredients:
-            lines.append(
+        content = '\n'.join([
+            'Список покупок:',
+            *(
                 f'{ing["ingredient__name"]} '
                 f'({ing["ingredient__measurement_unit"]})'
                 f' - {ing["total_amount"]}'
-            )
-        content = '\n'.join(lines)
-        return HttpResponse(content, content_type='text/plain; charset=utf-8')
+                for ing in ingredients
+            ),
+        ])
+        buffer = io.BytesIO(content.encode('utf-8'))
+        buffer.seek(0)
+        return FileResponse(
+            buffer,
+            content_type='text/plain; charset=utf-8',
+            as_attachment=True,
+            filename='shopping_cart.txt',
+        )
