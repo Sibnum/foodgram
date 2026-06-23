@@ -193,24 +193,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Выбирает нужный сериализатор для текущего запроса."""
-        if self.action in ('list', 'retrieve'):
+        if self.action in {'list', 'retrieve'}:
             return RecipeListSerializer
         return RecipeCreateSerializer
 
     def get_permissions(self):
         """Определяет набор разрешений для текущего запроса."""
-        if self.action in ('create',):
+        if self.action in {'create',}:
             self.permission_classes = (permissions.IsAuthenticated,)
-        elif self.action in ('partial_update', 'update', 'destroy'):
+        elif self.action in {'partial_update', 'update', 'destroy'}:
             self.permission_classes = (
                 permissions.IsAuthenticated,
                 IsAuthorOrReadOnly,
             )
-        elif self.action in (
+        elif self.action in {
             'favorite',
             'shopping_cart',
             'download_shopping_cart',
-        ):
+        }:
             self.permission_classes = (permissions.IsAuthenticated,)
         else:
             self.permission_classes = (permissions.AllowAny,)
