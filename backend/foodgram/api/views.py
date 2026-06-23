@@ -10,6 +10,7 @@
 import secrets
 
 from django.http import HttpResponse
+from django.urls import reverse
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
@@ -286,7 +287,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if not recipe.short_link:
             recipe.short_link = secrets.token_urlsafe(6)[:8]
             recipe.save(update_fields=['short_link'])
-        full_url = f'https://{request.get_host()}/s/{recipe.short_link}/'
+        relative_path = reverse(
+            'short-link-redirect', args=[recipe.short_link]
+        )
+        full_url = request.build_absolute_uri(relative_path)
         return Response({'short-link': full_url})
 
     @action(
