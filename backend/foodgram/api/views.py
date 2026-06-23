@@ -9,6 +9,7 @@
 
 import secrets
 
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.urls import reverse
 from rest_framework import permissions, status, viewsets
@@ -25,7 +26,7 @@ from api.serializers import (CustomUserCreateSerializer, CustomUserSerializer,
                              ShoppingCartSerializer, SubscribeSerializer,
                              SubscriptionSerializer, TagSerializer)
 from ingredients.models import Ingredient
-from recipes.models import Recipe, ShoppingCart
+from recipes.models import IngredientInRecipes, Recipe
 from tags.models import Tag
 from users.models import Subscription, User
 
@@ -299,24 +300,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачивает файл со списком покупок."""
-        cart_items = (
-            ShoppingCart.objects
-            .filter(user=request.user)
-            .select_related('recipe')
+        ingredients = (
+            IngredientInRecipes.objects
+            .filter(recipe__shopping_cart__user=request.user)
+            .values(
+                'ingredient__name',
+                'ingredient__measurement_unit',
+            )
+            .annotate(total_amount=Sum('amount'))
+            .order_by('ingredient__name')
         )
-        ingredients = {}
-        for item in cart_items:
-            recipe_ingredients = item.recipe.ingredient_list.all()
-            for ing in recipe_ingredients:
-                name = ing.ingredient.name
-                unit = ing.ingredient.measurement_unit
-                key = f"{name} ({unit})"
-                if key in ingredients:
-                    ingredients[key] += ing.amount
-                else:
-                    ingredients[key] = ing.amount
-        lines = ["Список покупок:"]
-        for name, amount in ingredients.items():
-            lines.append(f"{name} - {amount}")
-        content = "\n".join(lines)
+        lines = ['Список покупок:']
+        for ing in ingredients:
+            lines.append(
+                f'{ing["ingredient__name"]} '
+                f'({ing["ingredient__measurement_unit"]})'
+                f' - {ing["total_amount"]}'
+            )
+        content = '\n'.join(lines)
         return HttpResponse(content, content_type='text/plain; charset=utf-8')
