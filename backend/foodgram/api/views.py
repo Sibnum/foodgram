@@ -266,9 +266,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def remove_from_favorite(self, request, pk=None):
         """Удаляет рецепт из избранного."""
         recipe = self.get_object()
-        favorite = Favorite.objects.filter(
-            user=request.user, recipe=recipe
-        ).first()
+        favorite = recipe.favorites.filter(user=request.user).first()
         if not favorite:
             return Response(
                 {'errors': 'Рецепт отсутствует в избранном.'},
@@ -296,9 +294,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def remove_from_shopping_cart(self, request, pk=None):
         """Удаляет рецепт из списка покупок."""
         recipe = self.get_object()
-        cart_item = ShoppingCart.objects.filter(
-            user=request.user, recipe=recipe
-        ).first()
+        cart_item = recipe.shopping_cart.filter(user=request.user).first()
         if not cart_item:
             return Response(
                 {'errors': 'Рецепт отсутствует в списке покупок.'},
