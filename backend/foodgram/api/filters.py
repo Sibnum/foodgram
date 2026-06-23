@@ -5,6 +5,7 @@
 """
 
 import django_filters
+from django.db.models import Q
 
 from recipes.models import Recipe
 
@@ -24,10 +25,17 @@ class RecipeFilter(django_filters.FilterSet):
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
 
     def filter_tags(self, queryset, name, _):
-        """Фильтрует рецепты по slug тега. Параметр _ не используется."""
+        """Фильтрует рецепты по slug тегов в комбинации OR.
+
+        Если выбрано несколько тегов, показываются рецепты,
+        отмеченные хотя бы одним из этих тегов.
+        """
         tags = self.request.GET.getlist('tags')
-        for tag_slug in tags:
-            queryset = queryset.filter(tags__slug=tag_slug)
+        if tags:
+            query = Q()
+            for tag_slug in tags:
+                query |= Q(tags__slug=tag_slug)
+            queryset = queryset.filter(query)
         return queryset
 
     def filter_is_favorited(self, queryset, name, value):
