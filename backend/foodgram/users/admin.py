@@ -13,6 +13,7 @@ class UserAdmin(BaseUserAdmin):
     - Управление правами доступа (группы, staff, superuser)
     - Отображение статистики (количество рецептов, избранное)
     """
+
     list_display = (
         'username',
         'email',
