@@ -10,6 +10,7 @@
 import io
 import secrets
 
+from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import FileResponse
 from django.urls import reverse
@@ -20,7 +21,7 @@ from rest_framework.response import Response
 
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (CustomUserCreateSerializer, CustomUserSerializer,
+from api.serializers import (CustomUserCreateSerializer, UserReadSerializer,
                              FavoriteSerializer, IngredientSerializer,
                              RecipeCreateSerializer, RecipeListSerializer,
                              SetAvatarSerializer, SetPasswordSerializer,
@@ -29,7 +30,9 @@ from api.serializers import (CustomUserCreateSerializer, CustomUserSerializer,
 from ingredients.models import Ingredient
 from recipes.models import IngredientInRecipes, Recipe
 from tags.models import Tag
-from users.models import Subscription, User
+from users.models import Subscription
+
+User = get_user_model()
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -68,12 +71,12 @@ class UserViewSet(viewsets.ModelViewSet):
         """Выбирает сериализатор в зависимости от выполняемого действия.
 
         Для действия 'create' выбирает CustomUserCreateSerializer,
-        для остальных действий выбирает CustomUserSerializer.
+        для остальных действий выбирает UserReadSerializer.
         Возвращает сериализатор для текущего действия.
         """
         if self.action == 'create':
             return CustomUserCreateSerializer
-        return CustomUserSerializer
+        return UserReadSerializer
 
     def get_permissions(self):
         """Выбирает права доступа в зависимости от выполняемого действия.
@@ -136,7 +139,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def me(self, request):
         """Возвращает профиль текущего пользователя."""
-        serializer = CustomUserSerializer(
+        serializer = UserReadSerializer(
             request.user,
             context=self.get_serializer_context(),
         )

@@ -2,12 +2,14 @@
 
 Содержит все сериализаторы проекта:
 - TagSerializer, IngredientSerializer
-- CustomUserSerializer, CustomUserCreateSerializer
+- UserReadSerializer, CustomUserCreateSerializer
 - SetPasswordSerializer, SetAvatarSerializer
 - RecipeMinifiedSerializer, SubscriptionSerializer
 - IngredientInRecipeSerializer, RecipeListSerializer, RecipeCreateSerializer
 - FavoriteSerializer, ShoppingCartSerializer
 """
+
+from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
@@ -15,7 +17,9 @@ from fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientInRecipes, Recipe,
                             ShoppingCart)
 from tags.models import Tag
-from users.models import Subscription, User
+from users.models import Subscription
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -34,7 +38,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserReadSerializer(serializers.ModelSerializer):
     """Сериализатор пользователя для чтения (GET /api/users/)."""
 
     is_subscribed = serializers.SerializerMethodField()
@@ -243,7 +247,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
-    author = CustomUserSerializer(
+    author = UserReadSerializer(
         read_only=True
     )
     ingredients = IngredientInRecipeSerializer(

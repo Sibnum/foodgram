@@ -12,18 +12,15 @@ class User(AbstractUser):
     first_name = models.CharField(
         verbose_name=_('Имя'),
         max_length=150,
-        blank=False,
         help_text=_('Обязательное поле. Максимум 150 символов.')
     )
     last_name = models.CharField(
         verbose_name=_('Фамилия'),
         max_length=150,
-        blank=False,
         help_text=_('Обязательное поле. Максимум 150 символов.')
     )
     email = models.EmailField(
         verbose_name=_('Адрес электронной почты'),
-        blank=False,
         unique=True,
         help_text=_('Обязательное поле. Укажите действующий email.')
     )
@@ -74,7 +71,7 @@ class User(AbstractUser):
     @property
     def full_name(self):
         """Возвращает полное имя пользователя."""
-        return f"{self.first_name} {self.last_name}".strip() or self.username
+        return f'{self.first_name} {self.last_name}'.strip() or self.username
 
     def clean(self):
         """Валидация модели."""
@@ -112,7 +109,7 @@ class Subscription(models.Model):
         verbose_name_plural = _('Подписки')
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'author'],
+                fields=('user', 'author'),
                 name='unique_subscription'
             )
         ]
