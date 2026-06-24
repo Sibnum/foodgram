@@ -135,7 +135,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         if user == author:
             raise serializers.ValidationError('Нельзя подписаться на себя.')
 
-        if Subscription.objects.filter(user=user, author=author).exists():
+        if user.subscriptions.filter(author=author).exists():
             raise serializers.ValidationError('Уже подписан.')
 
         return data
@@ -415,8 +415,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверяет рецепт в избранном."""
-        if Favorite.objects.filter(
-            user=data['user'], recipe=data['recipe'],
+        if data['user'].favorites.filter(
+            recipe=data['recipe'],
         ).exists():
             raise serializers.ValidationError('Рецепт уже в избранном.')
         return data
@@ -438,8 +438,8 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверяет наличие рецепта в списке покупок."""
-        if ShoppingCart.objects.filter(
-            user=data['user'], recipe=data['recipe']
+        if data['user'].shopping_cart.filter(
+            recipe=data['recipe']
         ).exists():
             raise serializers.ValidationError('Рецепт уже в списке покупок.')
         return data

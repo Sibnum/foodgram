@@ -30,7 +30,6 @@ from api.serializers import (UserCreateSerializer, UserReadSerializer,
 from ingredients.models import Ingredient
 from recipes.models import IngredientInRecipes, Recipe
 from tags.models import Tag
-from users.models import Subscription
 
 User = get_user_model()
 
@@ -127,8 +126,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def remove_subscribe(self, request, id=None):
         """Убирает подписку на автора."""
         author = self.get_object()
-        subscription = Subscription.objects.filter(
-            user=request.user,
+        subscription = request.user.subscriptions.filter(
             author=author,
         ).first()
         if not subscription:
