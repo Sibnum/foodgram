@@ -87,13 +87,13 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'create':
             self.permission_classes = (permissions.AllowAny,)
-        elif self.action in (
+        elif self.action in {
             'me',
             'subscriptions',
             'subscribe',
             'set_password',
             'avatar',
-        ):
+        }:
             self.permission_classes = (permissions.IsAuthenticated,)
         else:
             self.permission_classes = (permissions.AllowAny,)

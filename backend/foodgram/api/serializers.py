@@ -50,15 +50,17 @@ class UserReadSerializer(serializers.ModelSerializer):
             'is_subscribed', 'avatar',
         )
 
-    def get_is_subscribed(self, obj):
+    def get_is_subscribed(self, target_user):
         """Проверяет, подписан ли текущий пользователь на этого.
 
-        obj - объект User, который сейчас сериализуется.
+        target_user - объект User, который сейчас сериализуется.
         self.context.get('request') - текущий HTTP-запрос.
         """
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user.subscriptions.filter(author=obj).exists()
+            return request.user.subscriptions.filter(
+                author=target_user
+            ).exists()
         return False
 
 
