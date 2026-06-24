@@ -21,7 +21,7 @@ from rest_framework.response import Response
 
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (CustomUserCreateSerializer, UserReadSerializer,
+from api.serializers import (UserCreateSerializer, UserReadSerializer,
                              FavoriteSerializer, IngredientSerializer,
                              RecipeCreateSerializer, RecipeListSerializer,
                              SetAvatarSerializer, SetPasswordSerializer,
@@ -75,7 +75,7 @@ class UserViewSet(viewsets.ModelViewSet):
         Возвращает сериализатор для текущего действия.
         """
         if self.action == 'create':
-            return CustomUserCreateSerializer
+            return UserCreateSerializer
         return UserReadSerializer
 
     def get_permissions(self):

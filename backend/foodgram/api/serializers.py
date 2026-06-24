@@ -2,7 +2,7 @@
 
 Содержит все сериализаторы проекта:
 - TagSerializer, IngredientSerializer
-- UserReadSerializer, CustomUserCreateSerializer
+- UserReadSerializer, UserCreateSerializer
 - SetPasswordSerializer, SetAvatarSerializer
 - RecipeMinifiedSerializer, SubscriptionSerializer
 - IngredientInRecipeSerializer, RecipeListSerializer, RecipeCreateSerializer
@@ -12,6 +12,9 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
+from djoser.serializers import (
+    UserCreateSerializer as DjoserUserCreateSerializer,
+)
 
 from fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientInRecipes, Recipe,
@@ -71,33 +74,14 @@ class UserReadSerializer(serializers.ModelSerializer):
         )
 
 
-class CustomUserCreateSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(DjoserUserCreateSerializer):
     """Сериализатор для регистрации (POST /api/users/)."""
 
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'email',
-            'username',
+    class Meta(DjoserUserCreateSerializer.Meta):
+        fields = DjoserUserCreateSerializer.Meta.fields + (
             'first_name',
             'last_name',
-            'password',
         )
-
-    def create(self, validated_data):
-        """Создаёт пользователя с хешированием пароля."""
-        user = User(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
 
 
 class SetPasswordSerializer(serializers.Serializer):
