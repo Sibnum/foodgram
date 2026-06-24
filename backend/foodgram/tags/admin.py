@@ -1,3 +1,5 @@
+"""Админ-панель для модели Tag."""
+
 from django.contrib import admin
 
 from .models import Tag

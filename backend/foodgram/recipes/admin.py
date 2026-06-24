@@ -1,3 +1,5 @@
+"""Админ-панель для моделей приложения Рецепты."""
+
 from django.contrib import admin
 
 from .models import Favorite, IngredientInRecipes, Recipe, ShoppingCart

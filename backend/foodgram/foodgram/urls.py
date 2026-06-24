@@ -1,3 +1,7 @@
+"""Главные маршруты (URL patterns) проекта Foodgram.
+
+Подключает админку, API-маршруты и обработчик коротких ссылок.
+"""
 from django.contrib import admin
 from django.urls import include, path
 

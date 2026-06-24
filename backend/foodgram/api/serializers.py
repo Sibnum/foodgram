@@ -220,6 +220,7 @@ class IngredientInputSerializer(serializers.Serializer):
     amount = serializers.IntegerField(min_value=1)
 
     def validate_id(self, value):
+        """Проверяет, что ингредиент с указанным id существует."""
         if not Ingredient.objects.filter(id=value).exists():
             raise serializers.ValidationError(
                 f'Ингредиент с id={value} не найден.'

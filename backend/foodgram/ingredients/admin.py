@@ -1,3 +1,5 @@
+"""Админ-панель для модели Ingredient."""
+
 from django.contrib import admin
 
 from .models import Ingredient
@@ -7,7 +9,7 @@ from .models import Ingredient
 class IngredientAdmin(admin.ModelAdmin):
     """Администрирование ингредиентов.
 
-    Предоставляет интерфейс для упрваления ингредиентами:
+    Предоставляет интерфейс для управления ингредиентами:
     - Просмотр и редактирование ингредиентов
     - Фильтрация по единицам измерения
     - Поиск по названию

@@ -1,4 +1,5 @@
-# backend/foodgram/users/forms.py
+"""Формы для приложения Пользователи (регистрация)."""
+
 from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
@@ -19,6 +20,7 @@ class UserRegistrationForm(UserCreationForm):
         )
 
     def __init__(self, *args, **kwargs):
+        """Устанавливает обязательность полей first_name, last_name, email."""
         super().__init__(*args, **kwargs)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True

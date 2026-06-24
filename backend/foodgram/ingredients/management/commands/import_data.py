@@ -8,6 +8,7 @@
     python manage.py import_data
     python manage.py import_data --path=/my/path/ingredients.csv
 """
+
 import csv
 from pathlib import Path
 

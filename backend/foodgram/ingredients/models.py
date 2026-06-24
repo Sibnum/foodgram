@@ -1,3 +1,5 @@
+"""Модель ингредиента для приложения Foodgram."""
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 

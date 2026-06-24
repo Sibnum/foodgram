@@ -1,3 +1,5 @@
+"""Модели приложения Пользователи: User, Subscription."""
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -80,6 +82,7 @@ class User(AbstractUser):
             self.email = self.email.lower().strip()
 
     def save(self, *args, **kwargs):
+        """Сохраняет пользователя с предварительной валидацией."""
         self.clean()
         super().save(*args, **kwargs)
 

@@ -206,7 +206,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get_response_serializer(self, instance):
-        """Возвращает сериализованый ответ."""
+        """Возвращает сериализованный ответ."""
         return RecipeListSerializer(
             instance, context=self.get_serializer_context()
         )

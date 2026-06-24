@@ -1,3 +1,9 @@
+"""Поля DRF для API приложения Foodgram.
+
+Содержит Base64ImageField — поле для декодирования
+base64-строки в файл изображения.
+"""
+
 import base64
 import uuid
 
@@ -9,6 +15,7 @@ class Base64ImageField(serializers.ImageField):
     """Декодирует base64-строку в файл изображения."""
 
     def to_internal_value(self, file_data):
+        """Декодирует base64-строку в файл изображения."""
         if isinstance(file_data, str) and file_data.startswith('data:image'):
             format, imgstr = file_data.split(';base64,')
             ext = format.split('/')[-1]

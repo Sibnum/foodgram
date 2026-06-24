@@ -12,5 +12,6 @@ class IngredientsConfig(AppConfig):
     Определяет настройки приложения Ингредиенты.
     Описывает имя приложения и отображаемое имя.
     """
+
     name = 'ingredients'
     verbose_name = 'Ингредиенты'
