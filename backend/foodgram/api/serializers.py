@@ -62,11 +62,13 @@ class UserReadSerializer(serializers.ModelSerializer):
         self.context.get('request') - текущий HTTP-запрос.
         """
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return request.user.subscriptions.filter(
+        return (
+            request
+            and request.user.is_authenticated
+            and request.user.subscriptions.filter(
                 author=target_user
             ).exists()
-        return False
+        )
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
