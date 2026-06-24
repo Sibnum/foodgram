@@ -46,8 +46,13 @@ class UserReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'email', 'username', 'first_name', 'last_name',
-            'is_subscribed', 'avatar',
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'avatar',
         )
 
     def get_is_subscribed(self, target_user):
@@ -72,7 +77,12 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'email', 'username', 'first_name', 'last_name', 'password',
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
         )
 
     def create(self, validated_data):
@@ -152,9 +162,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
         ).data
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
+class SubscriptionSerializer(UserReadSerializer):
     """Сериализатор для пользователя и его рецептов.
 
+    Наследник базового класса UserReadSerializer.
     Для GET /api/users/subscriptions/
     """
 
@@ -163,20 +174,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         source='recipes.count',
         read_only=True,
     )
-    is_subscribed = serializers.SerializerMethodField()
 
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
+    class Meta(UserReadSerializer.Meta):
+        fields: tuple = UserReadSerializer.Meta.fields + (
             'recipes',
             'recipes_count',
-            'avatar'
         )
 
     def get_is_subscribed(self, user):
