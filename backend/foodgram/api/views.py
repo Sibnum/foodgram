@@ -141,7 +141,7 @@ class UserViewSet(viewsets.ModelViewSet):
             request.user,
             context=self.get_serializer_context(),
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['POST'])
     def set_password(self, request):
@@ -163,7 +163,7 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
     @avatar.mapping.delete
     def remove_avatar(self, request):
