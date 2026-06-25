@@ -5,9 +5,14 @@ from django.contrib import admin
 from .models import Favorite, IngredientInRecipes, Recipe, ShoppingCart
 
 
-class SearchFieldsAdmin(admin.ModelAdmin):
-    """Определяет базовые поля для поиска."""
+class BaseFavoriteCartAdmin(admin.ModelAdmin):
+    """Базовый класс для админок избранного и списка покупок.
 
+    Определяет общие поля для отображения, фильтрации и поиска.
+    """
+
+    list_display = ('user', 'recipe', 'created_at')
+    list_filter = ('user',)
     search_fields = ('user__username', 'recipe__name')
 
 
@@ -61,14 +66,11 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Favorite)
-class FavoriteAdmin(SearchFieldsAdmin):
+class FavoriteAdmin(BaseFavoriteCartAdmin):
     """Администрирование избранного.
 
     Предоставляет интерфейс для просмотра избранных рецептов пользователей.
     """
-
-    list_display = ('user', 'recipe', 'created_at')
-    list_filter = ('user',)
 
 
 @admin.register(IngredientInRecipes)
@@ -85,11 +87,8 @@ class IngredientInRecipesAdmin(admin.ModelAdmin):
 
 
 @admin.register(ShoppingCart)
-class ShoppingCartAdmin(SearchFieldsAdmin):
+class ShoppingCartAdmin(BaseFavoriteCartAdmin):
     """Администрирование списка покупок.
 
     Предоставляет интерфейс для просмотра списков покупок пользователей.
     """
-
-    list_display = ('user', 'recipe', 'created_at')
-    list_filter = ('user',)
