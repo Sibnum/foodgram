@@ -12,9 +12,6 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
-from djoser.serializers import (
-    UserCreateSerializer as DjoserUserCreateSerializer,
-)
 
 from fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientInRecipes, Recipe,
@@ -74,14 +71,29 @@ class UserReadSerializer(serializers.ModelSerializer):
         )
 
 
-class UserCreateSerializer(DjoserUserCreateSerializer):
+class UserCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации (POST /api/users/)."""
 
-    class Meta(DjoserUserCreateSerializer.Meta):
-        fields = DjoserUserCreateSerializer.Meta.fields + (
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'username',
             'first_name',
             'last_name',
+            'password',
         )
+
+    def create(self, validated_data):
+        """Создаёт пользователя с хешированием пароля."""
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class SetPasswordSerializer(serializers.Serializer):
