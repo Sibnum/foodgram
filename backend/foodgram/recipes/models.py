@@ -155,7 +155,7 @@ class Favorite(CreatedAtMixin):
         verbose_name_plural = _('Избранное')
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 name='unique_favorite',
             )
         ]
