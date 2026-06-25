@@ -311,7 +311,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        permission_classes=[permissions.IsAuthenticated],
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
         """Скачивает файл со списком покупок."""
