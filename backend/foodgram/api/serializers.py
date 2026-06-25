@@ -201,7 +201,6 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
     id = serializers.SlugRelatedField(
         source='ingredient',
-        slug_field='id',
     )
     name = serializers.SlugRelatedField(
         source='ingredient',
