@@ -420,10 +420,21 @@ class RecipeRelationSerializer(serializers.ModelSerializer):
     Наследники задают:
     - Meta.model
     - duplicate_related_name — related_name для проверки дубликата
+
+    user и recipe передаются через context, а не через data,
+    чтобы не валидировать серверные данные как пользовательский ввод.
     """
 
     class Meta:
         fields = ('user', 'recipe')
+
+    def get_user(self):
+        """Возвращает пользователя из контекста."""
+        return self.context.get('user')
+
+    def get_recipe(self):
+        """Возвращает рецепт из контекста."""
+        return self.context.get('recipe')
 
     def validate(self, data):
         """Проверяет, что рецепт ещё не добавлен пользователем."""
@@ -432,14 +443,26 @@ class RecipeRelationSerializer(serializers.ModelSerializer):
             raise NotImplementedError(
                 'Наследник должен указать duplicate_related_name'
             )
-        user = data['user']
-        recipe = data['recipe']
+        user = self.get_user()
+        recipe = self.get_recipe()
+        if user is None or recipe is None:
+            raise serializers.ValidationError(
+                'user и recipe должны быть переданы в context.'
+            )
         if getattr(user, related_name).filter(recipe=recipe).exists():
             model_name = self.Meta.model._meta.verbose_name
             raise serializers.ValidationError(
                 f'Рецепт уже в {model_name}.'
             )
         return data
+
+    def create(self, validated_data):
+        """Создаёт связь, используя user/recipe из контекста."""
+        user = self.get_user()
+        recipe = self.get_recipe()
+        return self.Meta.model.objects.create(
+            user=user, recipe=recipe
+        )
 
     def to_representation(self, instance):
         """Возвращает мини-рецепт."""

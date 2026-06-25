@@ -247,12 +247,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         """Добавляет рецепт в избранное."""
         recipe = self.get_object()
+        context = self.get_serializer_context()
+        context['user'] = request.user
+        context['recipe'] = recipe
         serializer = FavoriteSerializer(
-            data={'user': request.user.id, 'recipe': recipe.id},
-            context=self.get_serializer_context(),
+            data={},
+            context=context,
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, recipe=recipe)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @favorite.mapping.delete
@@ -272,12 +275,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в список покупок."""
         recipe = self.get_object()
+        context = self.get_serializer_context()
+        context['user'] = request.user
+        context['recipe'] = recipe
         serializer = ShoppingCartSerializer(
-            data={'user': request.user.id, 'recipe': recipe.id},
-            context=self.get_serializer_context(),
+            data={},
+            context=context,
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, recipe=recipe)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @shopping_cart.mapping.delete
