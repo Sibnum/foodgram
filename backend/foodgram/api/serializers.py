@@ -307,11 +307,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         many=True,
         write_only=True,
     )
-    tags = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(),
-        many=True,
-        write_only=True,
-    )
 
     class Meta:
         model = Recipe
