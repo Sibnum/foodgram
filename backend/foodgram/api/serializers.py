@@ -6,7 +6,7 @@
 - SetPasswordSerializer, SetAvatarSerializer
 - RecipeMinifiedSerializer, SubscriptionSerializer
 - IngredientInRecipeSerializer, RecipeListSerializer, RecipeCreateSerializer
-- FavoriteSerializer, ShoppingCartSerializer
+- RecipeRelationSerializer, FavoriteSerializer, ShoppingCartSerializer
 """
 
 from django.contrib.auth import get_user_model
@@ -412,22 +412,32 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(instance, data)
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
-    """Сериализатор для рецептов из избранного.
+class RecipeRelationSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор для связей пользователя с рецептом.
 
-    Для POST/DELETE /api/recipes/{id}/favorite/.
+    Подходит для моделей вида {user, recipe} с unique-constraint.
+    Наследники задают:
+    - Meta.model
+    - duplicate_related_name — related_name для проверки дубликата
     """
 
     class Meta:
-        model = Favorite
         fields = ('user', 'recipe')
 
     def validate(self, data):
-        """Проверяет рецепт в избранном."""
-        if data['user'].favorites.filter(
-            recipe=data['recipe'],
-        ).exists():
-            raise serializers.ValidationError('Рецепт уже в избранном.')
+        """Проверяет, что рецепт ещё не добавлен пользователем."""
+        related_name = getattr(self, 'duplicate_related_name', None)
+        if related_name is None:
+            raise NotImplementedError(
+                'Наследник должен указать duplicate_related_name'
+            )
+        user = data['user']
+        recipe = data['recipe']
+        if getattr(user, related_name).filter(recipe=recipe).exists():
+            model_name = self.Meta.model._meta.verbose_name
+            raise serializers.ValidationError(
+                f'Рецепт уже в {model_name}.'
+            )
         return data
 
     def to_representation(self, instance):
@@ -435,24 +445,25 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return RecipeMinifiedSerializer(instance.recipe).data
 
 
-class ShoppingCartSerializer(serializers.ModelSerializer):
+class FavoriteSerializer(RecipeRelationSerializer):
+    """Сериализатор для рецептов из избранного.
+
+    Для POST/DELETE /api/recipes/{id}/favorite/.
+    """
+
+    duplicate_related_name = 'favorites'
+
+    class Meta(RecipeRelationSerializer.Meta):
+        model = Favorite
+
+
+class ShoppingCartSerializer(RecipeRelationSerializer):
     """Сериализатор для списка покупок.
 
     Для POST/DELETE /api/recipes/{id}/shopping_cart/
     """
 
-    class Meta:
+    duplicate_related_name = 'shopping_cart'
+
+    class Meta(RecipeRelationSerializer.Meta):
         model = ShoppingCart
-        fields = ('user', 'recipe')
-
-    def validate(self, data):
-        """Проверяет наличие рецепта в списке покупок."""
-        if data['user'].shopping_cart.filter(
-            recipe=data['recipe']
-        ).exists():
-            raise serializers.ValidationError('Рецепт уже в списке покупок.')
-        return data
-
-    def to_representation(self, instance):
-        """Возвращает список покупок."""
-        return RecipeMinifiedSerializer(instance.recipe).data
