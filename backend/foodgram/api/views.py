@@ -34,19 +34,23 @@ from tags.models import Tag
 User = get_user_model()
 
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class ReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Базовый read-only ViewSet без пагинации."""
+
+    pagination_class = None
+
+
+class TagViewSet(ReadOnlyViewSet):
     """Отображает запросы GET /api/tags/ и GET /api/tags/{id}/."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = None
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(ReadOnlyViewSet):
     """Обрабатывает GET /api/ingredients/ и GET /api/ingredients/{id}/."""
 
     serializer_class = IngredientSerializer
-    pagination_class = None
 
     def get_queryset(self):
         """Возвращает полный или фильтрованный по name queryset."""
