@@ -71,6 +71,19 @@ class FavoriteAdmin(SearchFieldsAdmin):
     list_filter = ('user',)
 
 
+@admin.register(IngredientInRecipes)
+class IngredientInRecipesAdmin(admin.ModelAdmin):
+    """Администрирование ингредиентов в рецептах.
+
+    Предоставляет интерфейс для управления количеством ингредиентов
+    в рецептах.
+    """
+
+    list_display = ('recipe', 'ingredient', 'amount')
+    list_filter = ('recipe', 'ingredient')
+    search_fields = ('recipe__name', 'ingredient__name')
+
+
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(SearchFieldsAdmin):
     """Администрирование списка покупок.

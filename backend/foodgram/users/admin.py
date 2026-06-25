@@ -1,9 +1,9 @@
-"""Админ-панель для модели User."""
+"""Админ-панель для моделей User и Subscription."""
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from .models import Subscription, User
 
 
 @admin.register(User)
@@ -37,3 +37,16 @@ class UserAdmin(BaseUserAdmin):
     def favorite_recipes_count(self, user):
         """Возвращает количество избранных рецептов."""
         return user.favorite_recipes_count
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    """Администрирование подписок.
+
+    Предоставляет интерфейс для управления подписками пользователей
+    на авторов.
+    """
+
+    list_display = ('user', 'author', 'created_at')
+    list_filter = ('user', 'author')
+    search_fields = ('user__username', 'author__username')
