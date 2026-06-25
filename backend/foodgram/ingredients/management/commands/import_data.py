@@ -54,10 +54,11 @@ class Command(BaseCommand):
             ingredients_to_create,
             ignore_conflicts=True,
         )
-        ingredients_count = len(created_count)
+        ingredients_count_create = len(created_count)
+        ingredients_count = Ingredient.objects.count()
         self.stdout.write(
             self.style.SUCCESS(
-                f'Импортировано {ingredients_count} ингредиентов. '
-                f'Всего в БД: {Ingredient.objects.count()}.'
+                f'Импортировано {ingredients_count_create} ингредиентов. '
+                f'Всего в БД: {ingredients_count}.'
             )
         )
