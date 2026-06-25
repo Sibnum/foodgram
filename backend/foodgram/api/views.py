@@ -82,11 +82,11 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserReadSerializer
 
     def get_permissions(self):
-        """Выбирает права доступа в зависимости от выполняемого действия.
+        """Определяет права доступа в зависимости от действия.
 
-        Для действия 'create' выбирает AllowAny, для действий 'me,
-        subscriptions, subscribe, set_password, avatar' выбирает
-        IsAuthenticated. Для всех остальных действий выбирает - AllowAny.
+        Для 'create' — AllowAny. Для 'me', 'subscriptions', 'subscribe',
+        'remove_subscribe', 'set_password', 'avatar' — IsAuthenticated.
+        Для остальных — AllowAny.
         """
         if self.action == 'create':
             self.permission_classes = (permissions.AllowAny,)
@@ -94,6 +94,7 @@ class UserViewSet(viewsets.ModelViewSet):
             'me',
             'subscriptions',
             'subscribe',
+            'remove_subscribe',
             'set_password',
             'avatar',
         }:
@@ -201,7 +202,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         elif self.action in {
             'favorite',
+            'remove_from_favorite',
             'shopping_cart',
+            'remove_from_shopping_cart',
             'download_shopping_cart',
         }:
             self.permission_classes = (permissions.IsAuthenticated,)

@@ -75,6 +75,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации (POST /api/users/)."""
 
     password = serializers.CharField(write_only=True)
+    re_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
@@ -85,10 +86,20 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'password',
+            're_password',
         )
+
+    def validate(self, data):
+        """Проверяет совпадение паролей."""
+        if data['password'] != data['re_password']:
+            raise serializers.ValidationError(
+                {'re_password': 'Пароли не совпадают.'}
+            )
+        return data
 
     def create(self, validated_data):
         """Создаёт пользователя с хешированием пароля."""
+        validated_data.pop('re_password')
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
@@ -186,29 +197,24 @@ class SubscriptionSerializer(UserReadSerializer):
     def get_recipes(self, user):
         """Проверяет лимит для рецепта."""
         request = self.context.get('request')
-        limit = request.query_params.get('recipes_limit')
         recipes = user.recipes.all()
-        if limit:
-            try:
-                recipes = recipes[:int(limit)]
-            except (ValueError, TypeError):
-                pass
+        if request:
+            limit = request.query_params.get('recipes_limit')
+            if limit:
+                try:
+                    recipes = recipes[:int(limit)]
+                except (ValueError, TypeError):
+                    pass
         return RecipeMinifiedSerializer(recipes, many=True).data
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для вывода ингредиента в рецепте с количеством."""
 
-    id = serializers.SlugRelatedField(
-        source='ingredient',
-    )
-    name = serializers.SlugRelatedField(
-        source='ingredient',
-        slug_field='name',
-    )
-    measurement_unit = serializers.SlugRelatedField(
-        source='ingredient',
-        slug_field='measurement_unit',
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
     )
 
     class Meta:
@@ -218,11 +224,6 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
             'name',
             'measurement_unit',
             'amount',
-        )
-        read_only_fields = (
-            'id',
-            'name',
-            'measurement_unit',
         )
 
 
