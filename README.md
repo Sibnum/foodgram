@@ -5,7 +5,8 @@
 Репозиторий проекта: [https://github.com/Sibnum/foodgram.git](https://github.com/Sibnum/foodgram.git)
 
 Имя ресурса: r-backend-vm-103011964
-Данные для подключения к виртуальной машине. IP-адрес -- 81.26.184.148.
+Данные для подключения к виртуальной машине:
+Адрес -- https://satisfiedvegetarian.ddns.net
 Данные для админки в foodgram/tests.yml
 
 Я в Мессенжере - https://yandex.ru/chat/p/5d26eb14-3049-4995-9fb8-40bd1df0e6c6?utm_source=invite
