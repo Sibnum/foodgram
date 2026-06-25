@@ -14,9 +14,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import FileResponse
 from django.urls import reverse
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from api.filters import RecipeFilter
@@ -97,6 +97,7 @@ class UserViewSet(viewsets.ModelViewSet):
             'remove_subscribe',
             'set_password',
             'avatar',
+            'remove_avatar',
         }:
             self.permission_classes = (permissions.IsAuthenticated,)
         else:
@@ -135,7 +136,7 @@ class UserViewSet(viewsets.ModelViewSet):
             author=author,
         ).first()
         if not subscription:
-            raise NotFound('Подписка не найдена.')
+            raise serializers.ValidationError('Подписка не найдена.')
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -264,7 +265,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
         favorite = recipe.favorites.filter(user=request.user).first()
         if not favorite:
-            raise NotFound('Рецепт отсутствует в избранном.')
+            raise ValidationError('Рецепт отсутствует в избранном.')
         favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -292,7 +293,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
         cart_item = recipe.shopping_cart.filter(user=request.user).first()
         if not cart_item:
-            raise NotFound('Рецепт отсутствует в списке покупок.')
+            raise serializers.ValidationError(
+                'Рецепт отсутствует в списке покупок.'
+            )
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

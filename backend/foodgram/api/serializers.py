@@ -74,7 +74,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации (POST /api/users/)."""
 
     password = serializers.CharField(write_only=True)
-    re_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
@@ -85,20 +84,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'password',
-            're_password',
         )
-
-    def validate(self, data):
-        """Проверяет совпадение паролей."""
-        if data['password'] != data['re_password']:
-            raise serializers.ValidationError(
-                {'re_password': 'Пароли не совпадают.'}
-            )
-        return data
 
     def create(self, validated_data):
         """Создаёт пользователя с хешированием пароля."""
-        validated_data.pop('re_password')
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
@@ -395,7 +384,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags_data = data.pop('tags', None)
         image_data = data.pop('image', None)
         if ingredients_data is not None:
-            instance.ingredient_list.clear()
+            instance.ingredient_list.all().delete()
             bulk_ingredients = [
                 IngredientInRecipes(
                     recipe=instance,
@@ -423,6 +412,9 @@ class RecipeRelationSerializer(serializers.ModelSerializer):
     user и recipe передаются через context, а не через data,
     чтобы не валидировать серверные данные как пользовательский ввод.
     """
+
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    recipe = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         fields = ('user', 'recipe')
