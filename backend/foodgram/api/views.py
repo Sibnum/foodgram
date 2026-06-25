@@ -325,15 +325,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .annotate(total_amount=Sum('amount'))
             .order_by('ingredient__name')
         )
-        content = '\n'.join([
+        content = '\n'.join((
             'Список покупок:',
-            *(
-                f'{ing["ingredient__name"]} '
-                f'({ing["ingredient__measurement_unit"]})'
-                f' - {ing["total_amount"]}'
-                for ing in ingredients
-            ),
-        ])
+            *(f'{ing["ingredient__name"]} '
+              f'({ing["ingredient__measurement_unit"]})'
+              f' - {ing["total_amount"]}'
+              for ing in ingredients),
+        ))
         buffer = io.BytesIO(content.encode('utf-8'))
         buffer.seek(0)
         return FileResponse(
