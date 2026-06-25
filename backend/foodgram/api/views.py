@@ -21,12 +21,12 @@ from rest_framework.response import Response
 
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (UserCreateSerializer, UserReadSerializer,
-                             FavoriteSerializer, IngredientSerializer,
+from api.serializers import (FavoriteSerializer, IngredientSerializer,
                              RecipeCreateSerializer, RecipeListSerializer,
                              SetAvatarSerializer, SetPasswordSerializer,
                              ShoppingCartSerializer, SubscribeSerializer,
-                             SubscriptionSerializer, TagSerializer)
+                             SubscriptionSerializer, TagSerializer,
+                             UserCreateSerializer, UserReadSerializer)
 from ingredients.models import Ingredient
 from recipes.models import IngredientInRecipes, Recipe
 from tags.models import Tag
