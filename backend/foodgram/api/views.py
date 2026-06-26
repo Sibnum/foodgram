@@ -116,7 +116,7 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         return self.get_paginated_response(serializer.data)
 
-    @action(detail=True, methods=['POST'])
+    @action(detail=True, methods=('POST',))
     def subscribe(self, request, id=None):
         """Создаёт подписку на автора."""
         author = self.get_object()
@@ -149,7 +149,7 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
-    @action(detail=False, methods=['POST'])
+    @action(detail=False, methods=('POST',))
     def set_password(self, request):
         """Выполняет валидацию и смену пароля."""
         serializer = SetPasswordSerializer(
@@ -161,7 +161,7 @@ class UserViewSet(viewsets.ModelViewSet):
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['PUT'], url_path='me/avatar')
+    @action(detail=False, methods=('PUT',), url_path='me/avatar')
     def avatar(self, request):
         """Обновляет аватар пользователя."""
         serializer = SetAvatarSerializer(
@@ -242,7 +242,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(response_serializer.data)
 
     @action(
-        detail=True, methods=['POST'],
+        detail=True, methods=('POST',),
         permission_classes=(permissions.IsAuthenticated,),
     )
     def favorite(self, request, pk=None):
@@ -270,7 +270,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        detail=True, methods=['POST'],
+        detail=True, methods=('POST',),
         permission_classes=(permissions.IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
