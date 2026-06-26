@@ -186,7 +186,7 @@ class ShoppingCart(CreatedAtMixin):
         verbose_name_plural = _('Списки покупок')
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 name='unique_shopping_cart',
             )
         ]
